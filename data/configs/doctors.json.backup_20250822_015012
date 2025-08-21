@@ -1,0 +1,193 @@
+{
+  "doctors": [
+    {
+      "name": "吳志謙",
+      "role": "主治",
+      "weekday_quota": 4,
+      "holiday_quota": 1,
+      "unavailable_dates": [
+        "2025-09-05",
+        "2025-09-06",
+        "2025-09-07",
+        "2025-09-08",
+        "2025-09-09",
+        "2025-09-10",
+        "2025-09-11",
+        "2025-09-12",
+        "2025-09-13",
+        "2025-09-14",
+        "2025-09-15"
+      ],
+      "preferred_dates": [
+        "2025-09-01",
+        "2025-09-18",
+        "2025-09-21",
+        "2025-09-24",
+        "2025-09-30"
+      ]
+    },
+    {
+      "name": "陳禹勳",
+      "role": "主治",
+      "weekday_quota": 4,
+      "holiday_quota": 2,
+      "unavailable_dates": [
+        "2025-09-13",
+        "2025-09-14"
+      ],
+      "preferred_dates": []
+    },
+    {
+      "name": "李明泓",
+      "role": "主治",
+      "weekday_quota": 5,
+      "holiday_quota": 2,
+      "unavailable_dates": [],
+      "preferred_dates": [
+        "2025-08-02",
+        "2025-08-03",
+        "2025-08-06",
+        "2025-08-08",
+        "2025-08-10",
+        "2025-08-14",
+        "2025-08-16"
+      ]
+    },
+    {
+      "name": "黃士峯",
+      "role": "主治",
+      "weekday_quota": 6,
+      "holiday_quota": 2,
+      "unavailable_dates": [
+        "2025-08-04",
+        "2025-08-05",
+        "2025-08-06",
+        "2025-08-07",
+        "2025-08-08",
+        "2025-08-09",
+        "2025-08-10",
+        "2025-08-11",
+        "2025-08-12",
+        "2025-08-13",
+        "2025-08-14",
+        "2025-08-15"
+      ],
+      "preferred_dates": []
+    },
+    {
+      "name": "朱炳騰",
+      "role": "主治",
+      "weekday_quota": 2,
+      "holiday_quota": 2,
+      "unavailable_dates": [],
+      "preferred_dates": [
+        "2025-08-05",
+        "2025-08-20",
+        "2025-08-22",
+        "2025-08-28"
+      ]
+    },
+    {
+      "name": "王宇軒",
+      "role": "總醫師",
+      "weekday_quota": 6,
+      "holiday_quota": 2,
+      "unavailable_dates": [
+        "2025-08-05",
+        "2025-08-06",
+        "2025-08-07",
+        "2025-08-26",
+        "2025-08-27",
+        "2025-08-28"
+      ],
+      "preferred_dates": []
+    },
+    {
+      "name": "方翊軒",
+      "role": "總醫師",
+      "weekday_quota": 2,
+      "holiday_quota": 1,
+      "unavailable_dates": [
+        "2025-08-27",
+        "2025-08-28",
+        "2025-08-29"
+      ],
+      "preferred_dates": [
+        "2025-08-13"
+      ]
+    },
+    {
+      "name": "曾馨平",
+      "role": "總醫師",
+      "weekday_quota": 2,
+      "holiday_quota": 1,
+      "unavailable_dates": [
+        "2025-08-12",
+        "2025-08-13",
+        "2025-08-14",
+        "2025-08-15",
+        "2025-08-17",
+        "2025-08-27",
+        "2025-08-28",
+        "2025-08-29"
+      ],
+      "preferred_dates": []
+    },
+    {
+      "name": "譚詠霖",
+      "role": "總醫師",
+      "weekday_quota": 6,
+      "holiday_quota": 2,
+      "unavailable_dates": [
+        "2025-08-05",
+        "2025-08-06",
+        "2025-08-07",
+        "2025-08-13",
+        "2025-08-18"
+      ],
+      "preferred_dates": []
+    },
+    {
+      "name": "黃田馨",
+      "role": "總醫師",
+      "weekday_quota": 2,
+      "holiday_quota": 1,
+      "unavailable_dates": [
+        "2025-08-21"
+      ],
+      "preferred_dates": []
+    },
+    {
+      "name": "黃鼎宇",
+      "role": "總醫師",
+      "weekday_quota": 1,
+      "holiday_quota": 1,
+      "unavailable_dates": [
+        "2025-08-13",
+        "2025-08-14",
+        "2025-08-26",
+        "2025-08-27",
+        "2025-08-28"
+      ],
+      "preferred_dates": []
+    },
+    {
+      "name": "張碩甫",
+      "role": "總醫師",
+      "weekday_quota": 2,
+      "holiday_quota": 1,
+      "unavailable_dates": [],
+      "preferred_dates": []
+    }
+  ],
+  "metadata": {
+    "saved_at": "2025-08-22T01:20:47.275535",
+    "format_version": "2.0",
+    "date_format": "YYYY-MM-DD",
+    "year": 2025,
+    "month": 9,
+    "total_doctors": 12,
+    "attending_count": 5,
+    "resident_count": 7
+  }
+}

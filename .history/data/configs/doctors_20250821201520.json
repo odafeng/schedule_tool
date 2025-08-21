@@ -1,0 +1,123 @@
+{
+  "doctors": [
+    {
+      "name": "許詔文",
+      "role": "主治",
+      "weekday_quota": 0,
+      "holiday_quota": 0,
+      "unavailable_dates": [],
+      "preferred_dates": []
+    },
+    {
+      "name": "吳志謙",
+      "role": "主治",
+      "weekday_quota": 4,
+      "holiday_quota": 1,
+      "unavailable_dates": [],
+      "preferred_dates": [1, 18, 21, 24, 30]
+    },
+    {
+      "name": "陳禹勳",
+      "role": "主治",
+      "weekday_quota": 4,
+      "holiday_quota": 2,
+      "unavailable_dates": [13, 14],
+      "preferred_dates": []
+    },
+    {
+      "name": "李明泓",
+      "role": "主治",
+      "weekday_quota": 5,
+      "holiday_quota": 2,
+      "unavailable_dates": [],
+      "preferred_dates": [2, 3, 6, 8, 10, 14, 16]
+    },
+    {
+      "name": "黃士峯",
+      "role": "主治",
+      "weekday_quota": 6,
+      "holiday_quota": 2,
+      "unavailable_dates": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      "preferred_dates": []
+    },
+    {
+      "name": "朱炳騰",
+      "role": "主治",
+      "weekday_quota": 2,
+      "holiday_quota": 2,
+      "unavailable_dates": [],
+      "preferred_dates": [5, 20, 22, 28]
+    },
+    {
+      "name": "王宇軒",
+      "role": "總醫師",
+      "weekday_quota": 6,
+      "holiday_quota": 2,
+      "unavailable_dates": [5, 6, 7, 26, 27, 28],
+      "preferred_dates": []
+    },
+    {
+      "name": "方翊軒",
+      "role": "總醫師",
+      "weekday_quota": 2,
+      "holiday_quota": 1,
+      "unavailable_dates": [27, 28, 29],
+      "preferred_dates": [13]
+    },
+    {
+      "name": "曾馨平",
+      "role": "總醫師",
+      "weekday_quota": 2,
+      "holiday_quota": 1,
+      "unavailable_dates": [12, 13, 14, 15, 17, 27, 28, 29],
+      "preferred_dates": []
+    },
+    {
+      "name": "譚詠霖",
+      "role": "總醫師",
+      "weekday_quota": 6,
+      "holiday_quota": 2,
+      "unavailable_dates": [5, 6, 7, 13, 18],
+      "preferred_dates": []
+    },
+    {
+      "name": "黃田馨",
+      "role": "總醫師",
+      "weekday_quota": 2,
+      "holiday_quota": 1,
+      "unavailable_dates": [21],
+      "preferred_dates": []
+    },
+    {
+      "name": "黃鼎宇",
+      "role": "總醫師",
+      "weekday_quota": 1,
+      "holiday_quota": 1,
+      "unavailable_dates": [13, 14, 26, 27, 28],
+      "preferred_dates": []
+    },
+    {
+      "name": "張碩甫",
+      "role": "總醫師",
+      "weekday_quota": 2,
+      "holiday_quota": 1,
+      "unavailable_dates": [],
+      "preferred_dates": []
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "last_updated": "2025-08-21",
+    "total_attending": 6,
+    "total_resident": 7,
+    "total_doctors": 13
+  },
+  "settings": {
+    "default_weekday_quota_attending": 3,
+    "default_holiday_quota_attending": 2,
+    "default_weekday_quota_resident": 5,
+    "default_holiday_quota_resident": 3,
+    "allow_quota_override": true,
+    "auto_balance_workload": true
+  }
+}

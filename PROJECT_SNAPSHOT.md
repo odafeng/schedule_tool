@@ -1,0 +1,270 @@
+# Intelli-CR Project Snapshot
+
+This document captures the current state of the ShadexTable project. Attach this file to your AI prompts to provide essential context about the project’s structure, dependencies and conventions. The goal is to help the AI produce code that integrates seamlessly with the existing codebase without breaking established patterns.
+
+## Overview
+
+ShadexTable is a statistical analysis platform built with Next.js 14, React and TypeScript.  It provides researchers and analysts with an intuitive interface for uploading CSV/Excel files, previewing data, performing descriptive statistics and generating survival analysis plots.  The front‑end uses Tailwind CSS for styling and implements a unified error handling framework.  On the server side, the system communicates with a FastAPI backend that returns responses following a `StandardResponse` schema.  This schema contains the fields `success: bool`, `message: str`, `data: dict | list | null` and an optional `error_code: int`.  When extending the API or consuming it from the front‑end, ensure that all responses conform to this structure.
+
+## Project Structure
+
+The following tree lists the files and folders in this repository.  Build artefacts and third‑party modules are omitted for brevity.
+
+```
+- Intelli-CR/
+  - LOGO.svg
+  - README.md
+  - Untitled diagram _ Mermaid Chart-2025-08-21-053121.png
+  - Untitled diagram _ Mermaid Chart-2025-08-21-053241.png
+  - config.yaml
+  - generate_snapshot.py
+  - main.py
+  - requirements.txt
+  - requirements_test.txt
+  - scheduler.py
+  - setup_directories.py
+  - test_date_format.py
+  - .history/
+    - README_20250821132930.md
+    - README_20250821133249.md
+    - config_20250821130241.yaml
+    - config_20250821130323.yaml
+    - config_20250821130340.yaml
+    - main_20250821130359.py
+    - main_20250821130402.py
+    - migrate_20250821202922.py
+    - migrate_20250821202927.py
+    - requirements_20250821130224.txt
+    - requirements_20250821130230.txt
+    - scheduler_20250821125040.py
+    - scheduler_20250821125051.py
+    - scheduler_20250821125441.py
+    - scheduler_20250821125442.py
+    - setup_directories_20250821132355.py
+    - setup_directories_20250821132359.py
+    - backend/
+      - algorithms/
+        - __init___20250821130804.py
+        - __init___20250821130810.py
+        - __init___20250821193351.py
+        - __init___20250821193427.py
+        - __init___20250821193556.py
+        - beam_search_20250821130839.py
+        - beam_search_20250821130843.py
+        - csp_solver_20250821130823.py
+        - csp_solver_20250821130826.py
+        - heuristics_20250821130855.py
+        - heuristics_20250821130858.py
+        - stage1_beamsearch_20250821192828.py
+        - stage1_beamsearch_20250821192832.py
+        - stage1_greedy_beam_20250821192831.py
+        - stage1_greedy_beam_20250821193212.py
+        - stage1_greedy_beam_20250821193255.py
+        - stage1_greedy_beam_20250821194244.py
+        - stage1_greedy_beam_20250821201318.py
+        - stage2_CSP_20250821192759.py
+        - stage2_CSP_20250821192803.py
+        - stage2_interactiveCSP_20250821192802.py
+        - stage2_interactiveCSP_20250821192842.py
+        - stage3_publish_20250821192735.py
+        - stage3_publish_20250821192744.py
+        - stage3_publish_20250821193518.py
+        - stage3_publish_20250821194509.py
+      - analyzers/
+        - __init___20250821130916.py
+        - __init___20250821130923.py
+        - complexity_analyzer_20250821131038.py
+        - complexity_analyzer_20250821131041.py
+        - feature_extractor_20250821130957.py
+        - feature_extractor_20250821131001.py
+        - schedule_scorer_20250821130938.py
+        - schedule_scorer_20250821130941.py
+        - solution_grader_20250821131019.py
+        - solution_grader_20250821131023.py
+      - machine_learning/
+        - __init___20250821131104.py
+        - __init___20250821131110.py
+        - solution_pool_20250821131120.py
+        - solution_pool_20250821131123.py
+        - training_generator_20250821131138.py
+        - training_generator_20250821131141.py
+      - models/
+        - __init___20250821130439.py
+        - __init___20250821130442.py
+        - __init___20250821193309.py
+        - __init___20250821193326.py
+        - __init___20250821193532.py
+        - __init___20250821194220.py
+        - __init___20250821194533.py
+        - doctor_20250821130508.py
+        - doctor_20250821130514.py
+        - doctor_20250821130517.py
+        - doctor_20250821130527.py
+        - doctor_20250821130528.py
+        - doctor_20250821130529.py
+        - doctor_20250821130530.py
+        - doctor_20250821130531.py
+        - doctor_20250821130557.py
+        - doctor_20250821203313.py
+        - doctor_20250821204301.py
+        - schedule_20250821130545.py
+        - schedule_20250821130548.py
+        - schedule_20250821130553.py
+        - schedule_20250821193138.py
+        - schedule_20250821193503.py
+        - schedule_20250821194307.py
+        - schedule_20250821194349.py
+        - schedule_20250821194502.py
+        - solution_20250821130621.py
+        - solution_20250821130625.py
+      - utils/
+        - __init___20250821130644.py
+        - __init___20250821130650.py
+        - calendar_utils_20250821130714.py
+        - calendar_utils_20250821130717.py
+        - date_parser_20250821194003.py
+        - date_parser_20250821204235.py
+        - test_date_format_20250821204329.py
+        - test_date_format_20250821204336.py
+        - test_date_format_20250821204402.py
+        - test_date_format_20250821204438.py
+        - validation_20250821130728.py
+        - validation_20250821130731.py
+        - validation_20250821203243.py
+    - data/
+      - configs/
+        - doctors_20250821194003.json
+        - doctors_20250821201520.json
+        - doctors_20250821201536.json
+        - doctors_20250821201540.json
+        - doctors_20250821201541.json
+    - frontend/
+      - components/
+        - __init___20250821132233.py
+        - __init___20250821132236.py
+        - calendar_view_20250821132246.py
+        - calendar_view_20250821132249.py
+        - schedule_table_20250821132316.py
+        - schedule_table_20250821132320.py
+      - pages/
+        - __init___20250821131359.py
+        - __init___20250821131407.py
+        - calendar_settings_20250821132039.py
+        - calendar_settings_20250821132043.py
+        - calendar_settings_20250821194640.py
+        - doctor_management_20250821132018.py
+        - doctor_management_20250821132021.py
+        - doctor_management_20250821202001.py
+        - doctor_management_20250821203430.py
+        - ml_analytics_20250821132204.py
+        - ml_analytics_20250821132208.py
+        - schedule_execution_20250821132058.py
+        - schedule_execution_20250821132102.py
+        - schedule_execution_20250821192708.py
+        - schedule_execution_20250821194044.py
+        - schedule_execution_20250821194047.py
+        - schedule_execution_20250821194121.py
+        - schedule_viewer_20250821132119.py
+        - schedule_viewer_20250821132122.py
+        - statistics_analysis_20250821132144.py
+        - statistics_analysis_20250821132147.py
+      - utils/
+        - __init___20250821131210.py
+        - __init___20250821131216.py
+        - session_manager_20250821131250.py
+        - session_manager_20250821131253.py
+        - session_manager_20250821131314.py
+        - session_manager_20250821204248.py
+        - styles_20250821131227.py
+        - styles_20250821131231.py
+    - tests/
+      - integration/
+        - test_doctor_management_20250821194003.py
+        - test_doctor_management_20250821204139.py
+        - test_doctor_management_20250821204157.py
+  - .pytest_cache/
+    - CACHEDIR.TAG
+    - README.md
+    - v/
+      - cache/
+        - nodeids
+  - backend/
+    - algorithms/
+      - __init__.py
+      - beam_search.py
+      - csp_solver.py
+      - heuristics.py
+      - stage1_greedy_beam.py
+      - stage2_interactiveCSP.py
+      - stage3_publish.py
+    - analyzers/
+      - __init__.py
+      - complexity_analyzer.py
+      - feature_extractor.py
+      - schedule_scorer.py
+      - solution_grader.py
+    - ml/
+      - __init__.py
+      - solution_pool.py
+      - training_generator.py
+    - models/
+      - __init__.py
+      - doctor.py
+      - schedule.py
+      - solution.py
+    - utils/
+      - __init__.py
+      - calendar_utils.py
+      - date_parser.py
+      - holiday_manager.py
+      - validation.py
+  - data/
+    - configs/
+      - doctors.json
+      - doctors.json.backup_20250821_202929
+      - holidays_config.json
+      - schedule_settings.json
+    - exports/
+    - schedules/
+    - training_data/
+  - frontend/
+    - components/
+      - __init__.py
+      - calendar_view.py
+      - schedule_table.py
+    - pages/
+      - __init__.py
+      - calendar_settings.py
+      - doctor_management.py
+      - ml_analytics.py
+      - schedule_execution.py
+      - schedule_viewer.py
+      - statistics_analysis.py
+    - utils/
+      - __init__.py
+      - session_manager.py
+      - styles.py
+  - tests/
+    - fixtures/
+    - integration/
+      - test_doctor_management.py
+    - unit/
+```
+
+## Dependencies
+
+### Python dependencies (requirements.txt)
+- dataclasses-json>=0.6.0@
+- numpy>=1.24.0@
+- pandas>=2.0.0@
+- plotly>=5.14.0@
+- python-dateutil>=2.8.2@
+- streamlit>=1.28.0@
+
+## Error Handling and API Conventions
+
+The front‑end consolidates all error creation and handling in `src/utils/error.ts` and type definitions in `src/types/errors.ts`.  Developers should **not** throw arbitrary `Error` objects.  Instead, create new errors via `createError(code, context, messageKey?, options?)` or use the predefined helpers in `CommonErrors`.  Each error carries a user‑friendly message, an action suggestion, severity and retry flag.  When catching exceptions, use the type guard `isAppError` to distinguish between expected application errors and unknown failures.  Always report errors using `apiClient.reportError()` so that they can be logged and tracked.
+
+For API communication, use the `ApiClient` class in `src/lib/apiClient.ts`.  It wraps the native fetch API with timeout control, automatic retries on GET requests and conversion of HTTP status codes into typed `AppError` instances via `createErrorFromHttp()`.  All network errors propagate as `AppError` so they can be handled uniformly by the caller.
+
+On the backend, implement endpoints using FastAPI.  Responses **must** conform to the `StandardResponse` schema defined in the backend’s `schemas.py` (success, message, data, error_code).  When adding new endpoints, document their request and response models explicitly and update this snapshot if the schema changes.

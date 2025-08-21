@@ -1,27 +1,40 @@
 {
   "doctors": [
     {
-      "name": "許詔文",
-      "role": "主治",
-      "weekday_quota": 0,
-      "holiday_quota": 0,
-      "unavailable_dates": [],
-      "preferred_dates": []
-    },
-    {
       "name": "吳志謙",
       "role": "主治",
       "weekday_quota": 4,
       "holiday_quota": 1,
-      "unavailable_dates": [],
-      "preferred_dates": []
+      "unavailable_dates": [
+        "2025-09-05",
+        "2025-09-06",
+        "2025-09-07",
+        "2025-09-08",
+        "2025-09-09",
+        "2025-09-10",
+        "2025-09-11",
+        "2025-09-12",
+        "2025-09-13",
+        "2025-09-14",
+        "2025-09-15"
+      ],
+      "preferred_dates": [
+        "2025-09-01",
+        "2025-09-18",
+        "2025-09-21",
+        "2025-09-24",
+        "2025-09-30"
+      ]
     },
     {
       "name": "陳禹勳",
       "role": "主治",
       "weekday_quota": 4,
       "holiday_quota": 2,
-      "unavailable_dates": [],
+      "unavailable_dates": [
+        "2025-09-13",
+        "2025-09-14"
+      ],
       "preferred_dates": []
     },
     {
@@ -30,14 +43,35 @@
       "weekday_quota": 5,
       "holiday_quota": 2,
       "unavailable_dates": [],
-      "preferred_dates": []
+      "preferred_dates": [
+        "2025-09-02",
+        "2025-09-03",
+        "2025-09-06",
+        "2025-09-08",
+        "2025-09-10",
+        "2025-09-14",
+        "2025-09-16"
+      ]
     },
     {
       "name": "黃士峯",
       "role": "主治",
       "weekday_quota": 6,
       "holiday_quota": 2,
-      "unavailable_dates": [],
+      "unavailable_dates": [
+        "2025-09-04",
+        "2025-09-05",
+        "2025-09-06",
+        "2025-09-07",
+        "2025-09-08",
+        "2025-09-09",
+        "2025-09-10",
+        "2025-09-11",
+        "2025-09-12",
+        "2025-09-13",
+        "2025-09-14",
+        "2025-09-15"
+      ],
       "preferred_dates": []
     },
     {
@@ -46,14 +80,26 @@
       "weekday_quota": 2,
       "holiday_quota": 2,
       "unavailable_dates": [],
-      "preferred_dates": []
+      "preferred_dates": [
+        "2025-09-05",
+        "2025-09-20",
+        "2025-09-22",
+        "2025-09-28"
+      ]
     },
     {
       "name": "王宇軒",
       "role": "總醫師",
       "weekday_quota": 6,
       "holiday_quota": 2,
-      "unavailable_dates": [],
+      "unavailable_dates": [
+        "2025-09-05",
+        "2025-09-06",
+        "2025-09-07",
+        "2025-09-26",
+        "2025-09-27",
+        "2025-09-28"
+      ],
       "preferred_dates": []
     },
     {
@@ -61,15 +107,30 @@
       "role": "總醫師",
       "weekday_quota": 2,
       "holiday_quota": 1,
-      "unavailable_dates": [],
-      "preferred_dates": []
+      "unavailable_dates": [
+        "2025-09-27",
+        "2025-09-28",
+        "2025-09-29"
+      ],
+      "preferred_dates": [
+        "2025-09-13"
+      ]
     },
     {
       "name": "曾馨平",
       "role": "總醫師",
       "weekday_quota": 2,
       "holiday_quota": 1,
-      "unavailable_dates": [],
+      "unavailable_dates": [
+        "2025-09-12",
+        "2025-09-13",
+        "2025-09-14",
+        "2025-09-15",
+        "2025-09-17",
+        "2025-09-27",
+        "2025-09-28",
+        "2025-09-29"
+      ],
       "preferred_dates": []
     },
     {
@@ -77,7 +138,13 @@
       "role": "總醫師",
       "weekday_quota": 6,
       "holiday_quota": 2,
-      "unavailable_dates": [],
+      "unavailable_dates": [
+        "2025-09-05",
+        "2025-09-06",
+        "2025-09-07",
+        "2025-09-13",
+        "2025-09-18"
+      ],
       "preferred_dates": []
     },
     {
@@ -85,7 +152,9 @@
       "role": "總醫師",
       "weekday_quota": 2,
       "holiday_quota": 1,
-      "unavailable_dates": [],
+      "unavailable_dates": [
+        "2025-09-21"
+      ],
       "preferred_dates": []
     },
     {
@@ -93,7 +162,13 @@
       "role": "總醫師",
       "weekday_quota": 1,
       "holiday_quota": 1,
-      "unavailable_dates": [],
+      "unavailable_dates": [
+        "2025-09-13",
+        "2025-09-14",
+        "2025-09-26",
+        "2025-09-27",
+        "2025-09-28"
+      ],
       "preferred_dates": []
     },
     {
@@ -106,18 +181,13 @@
     }
   ],
   "metadata": {
-    "version": "1.0.0",
-    "last_updated": "2025-08-21",
-    "total_attending": 6,
-    "total_resident": 7,
-    "total_doctors": 13
-  },
-  "settings": {
-    "default_weekday_quota_attending": 3,
-    "default_holiday_quota_attending": 2,
-    "default_weekday_quota_resident": 5,
-    "default_holiday_quota_resident": 3,
-    "allow_quota_override": true,
-    "auto_balance_workload": true
+    "saved_at": "2025-08-22T01:50:12.778788",
+    "format_version": "2.0",
+    "date_format": "YYYY-MM-DD",
+    "year": 2025,
+    "month": 9,
+    "total_doctors": 12,
+    "attending_count": 5,
+    "resident_count": 7
   }
 }
