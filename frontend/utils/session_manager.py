@@ -107,7 +107,7 @@ class SessionManager:
         
         st.info(f"""
         📊 **{year}年{month}月**
-        - 假日數：{len(holidays)}
+        - 非週末假日數：{len(holidays)}
         - 補班日數：{len(workdays)}
         """)
         

@@ -33,8 +33,7 @@ def render():
     with tab3:
         render_workday_management(year, month, holiday_manager)
     
-    with tab4:
-        render_statistics(year, holiday_manager)
+    
 
 def render_calendar_preview(year: int, month: int, holiday_manager: HolidayManager):
     """渲染月曆預覽"""
@@ -141,7 +140,7 @@ def render_holiday_management(year: int, month: int, holiday_manager: HolidayMan
     
     with col2:
         # 顯示現有假日
-        st.markdown("### 本月假日列表")
+        st.markdown("### 本月假日(非週末)列表")
         
         # 取得本月所有假日
         holidays_list = []
@@ -281,56 +280,6 @@ def render_workday_management(year: int, month: int, holiday_manager: HolidayMan
                             st.rerun()
         else:
             st.info("本月暫無補班日")
-
-def render_statistics(year: int, holiday_manager: HolidayManager):
-    """渲染統計資訊"""
-    st.subheader(f"📊 {year}年 假日統計")
-    
-    # 取得統計資料
-    stats = holiday_manager.get_statistics(year)
-    
-    # 顯示主要指標
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.metric("總假日數", stats['total_holidays'])
-    
-    with col2:
-        st.metric("總補班日數", stats['total_workdays'])
-    
-    with col3:
-        st.metric("淨假日數", stats['net_holidays'])
-    
-    with col4:
-        total_days = 365 if year % 4 != 0 else 366
-        work_days = total_days - stats['net_holidays']
-        st.metric("工作日數", work_days)
-    
-    # 假日類型分布
-    st.divider()
-    st.markdown("### 假日類型分布")
-    
-    if stats['holiday_types']:
-        df_types = pd.DataFrame(
-            list(stats['holiday_types'].items()),
-            columns=['類型', '天數']
-        )
-        
-        # 類型中文對照
-        type_mapping = {
-            'national': '國定假日',
-            'traditional': '傳統節日',
-            'custom': '自訂假日',
-            'spring_festival': '春節',
-            'unknown': '其他'
-        }
-        
-        df_types['類型'] = df_types['類型'].map(lambda x: type_mapping.get(x, x))
-        
-        # 顯示圖表
-        st.bar_chart(df_types.set_index('類型'))
-    else:
-        st.info("暫無假日資料")
     
     # 清除資料功能
     st.divider()
