@@ -1,0 +1,37 @@
+app:
+  title: "Intelli-CR ｜ 醫師智慧排班系統"
+  version: "2.0"
+  icon: "🏥"
+
+scheduling:
+  default_max_consecutive_days: 2
+  default_beam_width: 5
+  default_csp_timeout: 10
+  default_neighbor_expansion: 10
+
+ml:
+  solution_pool_enabled: true
+  default_export_format: "csv"
+  
+grading:
+  thresholds:
+    S:
+      min_score: 0
+      max_unfilled: 0
+      max_hard_violations: 0
+    A:
+      min_score: -100
+      max_unfilled: 2
+      max_hard_violations: 1
+    B:
+      min_score: -500
+      max_unfilled: 5
+      max_hard_violations: 3
+    C:
+      min_score: -1000
+      max_unfilled: 10
+      max_hard_violations: 5
+    D:
+      min_score: -2000
+      max_unfilled: 15
+      max_hard_violations: 10
