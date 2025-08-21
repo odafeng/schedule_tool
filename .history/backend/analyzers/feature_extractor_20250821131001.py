@@ -124,7 +124,7 @@ class FeatureExtractor:
         
         # 角色平衡
         attending_duties = [duty_counts[d.name] for d in doctors if d.role == "主治"]
-        resident_duties = [duty_counts[d.name] for d in doctors if d.role == "住院"]
+        resident_duties = [duty_counts[d.name] for d in doctors if d.role == "總醫師"]
         attending_std = np.std(attending_duties) if attending_duties else 0
         resident_std = np.std(resident_duties) if resident_duties else 0
         

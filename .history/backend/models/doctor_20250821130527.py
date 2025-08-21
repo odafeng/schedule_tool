@@ -8,7 +8,7 @@ from typing import List, Literal
 class Doctor:
     """醫師資料模型"""
     name: str
-    role: Literal["主治", "住院"]
+    role: Literal["主治", "總醫師"]
     weekday_quota: int  # 平日配額
     holiday_quota: int  # 假日配額
     unavailable_dates: List[str] = field(default_factory=list)  # 不可值班日

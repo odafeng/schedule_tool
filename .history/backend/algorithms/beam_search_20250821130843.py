@@ -24,7 +24,7 @@ class BeamSearchScheduler:
         self.weekdays = weekdays
         self.holidays = holidays
         self.attending_doctors = [d for d in doctors if d.role == "主治"]
-        self.resident_doctors = [d for d in doctors if d.role == "住院"]
+        self.resident_doctors = [d for d in doctors if d.role == "總醫師"]
         
         # 建立醫師索引
         self.doctor_map = {d.name: d for d in doctors}
@@ -105,7 +105,7 @@ class BeamSearchScheduler:
             new_beam = []
             for score, schedule, parent_id in beam:
                 available = get_available_doctors(
-                    date_str, "住院", schedule,
+                    date_str, "總醫師", schedule,
                     self.doctor_map, self.constraints,
                     self.weekdays, self.holidays
                 )
@@ -174,7 +174,7 @@ class BeamSearchScheduler:
             if not slot.attending:
                 unfilled.append((date_str, "主治"))
             if not slot.resident:
-                unfilled.append((date_str, "住院"))
+                unfilled.append((date_str, "總醫師"))
         
         if not unfilled:
             return schedule
@@ -343,7 +343,7 @@ class BeamSearchScheduler:
             if not slot.attending:
                 unfilled.append((date_str, "主治"))
             if not slot.resident:
-                unfilled.append((date_str, "住院"))
+                unfilled.append((date_str, "總醫師"))
         
         # 生成建議
         suggestions = []

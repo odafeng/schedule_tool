@@ -1,0 +1,36 @@
+# 測試環境依賴套件
+
+# 測試框架
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-mock>=3.10.0
+pytest-xdist>=3.0.0  # 平行測試執行
+
+# Mock 和測試工具
+mock>=4.0.3
+factory-boy>=3.2.0  # 測試資料工廠（如需要）
+
+# 測試報告
+pytest-html>=3.1.0  # HTML 測試報告
+pytest-json-report>=1.5.0  # JSON 測試報告
+
+# 效能測試（可選）
+pytest-benchmark>=4.0.0
+
+# 程式碼品質檢查
+flake8>=5.0.0
+black>=22.0.0
+isort>=5.10.0
+
+# 型別檢查
+mypy>=0.991
+
+# 專案依賴（從主要 requirements.txt 繼承）
+streamlit>=1.28.0
+pandas>=2.0.0
+numpy>=1.24.0
+plotly>=5.14.0
+
+# 測試特定依賴
+responses>=0.22.0  # HTTP 請求 mock
+freezegun>=1.2.0   # 時間相關測

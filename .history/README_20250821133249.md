@@ -183,7 +183,7 @@ hospital_scheduling/
 @dataclass
 class Doctor:
     name: str                    # 醫師姓名
-    role: Literal["主治", "住院"]  # 角色類型
+    role: Literal["主治", "總醫師"]  # 角色類型
     weekday_quota: int           # 平日配額
     holiday_quota: int           # 假日配額
     unavailable_dates: List[str] # 不可值班日
@@ -709,7 +709,7 @@ def calculate_score(schedule: Dict[str, ScheduleSlot]) -> float:
 @dataclass
 class Doctor:
     name: str
-    role: Literal["主治", "住院"]
+    role: Literal["主治", "總醫師"]
 
 # 3. 文檔字串
 def complex_function(param1: int, param2: str) -> bool:

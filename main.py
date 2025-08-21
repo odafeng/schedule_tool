@@ -34,8 +34,8 @@ def main():
         SessionManager.render_sidebar_settings()
     
     # 主頁面標題
-    st.title("🏥 醫師智慧排班系統")
-    st.markdown("支援主治醫師與住院醫師的自動排班，使用束搜索與CSP演算法")
+    st.title("Intelli-CR｜醫師智慧排班系統")
+    st.markdown("v2.0.0 ｜ Designed by Dr. Shih-Feng Huang")
     
     # 主要功能分頁
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
@@ -70,7 +70,7 @@ def main():
     st.markdown("""
     <div style='text-align: center; color: #666;'>
         <p>醫師智慧排班系統 v2.0 | 使用束搜索、CSP與機器學習</p>
-        <p>© 2024 Hospital Scheduling System with ML</p>
+        <p>© 2025 Intelli-CR Scheduling System with ML</p>
     </div>
     """, unsafe_allow_html=True)
 

@@ -49,6 +49,7 @@ def render_complexity_analysis(weekdays: list, holidays: list):
             holidays
         )
         
+        # 第一行：基本資訊與難度
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
@@ -56,30 +57,94 @@ def render_complexity_analysis(weekdays: list, holidays: list):
             st.metric("總天數", analysis['total_days'])
         
         with col2:
-            st.metric("平日供需比", f"{analysis['weekday_supply_ratio']:.2f}")
-            st.metric("假日供需比", f"{analysis['holiday_supply_ratio']:.2f}")
+            st.metric("主治醫師", f"{analysis['attending_count']}人")
+            st.metric("住院醫師", f"{analysis['resident_count']}人")
         
         with col3:
-            st.metric("約束密度", f"{analysis['constraint_density']:.2%}")
-            st.metric("搜索空間(log10)", f"{analysis['search_space_log10']:.1f}")
+            st.metric("約束密度", f"{analysis['constraint_density']:.1%}")
+            st.metric("最高個人衝突", f"{analysis['max_personal_conflict']:.1%}")
         
         with col4:
             feasible = "✅ 可行" if analysis['is_feasible'] else "❌ 不可行"
             st.metric("可行性", feasible)
             st.metric("瓶頸數", len(analysis['bottlenecks']))
         
-        # 顯示瓶頸
+        # 第二行：供需比分析（分角色）
+        st.subheader("📊 供需比分析")
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            ratio = analysis['weekday_attending_ratio']
+            delta = "充足" if ratio >= 1.5 else "緊張" if ratio >= 1.0 else "不足"
+            st.metric("平日主治", f"{ratio:.2f}", delta)
+        
+        with col2:
+            ratio = analysis['weekday_resident_ratio']
+            delta = "充足" if ratio >= 1.5 else "緊張" if ratio >= 1.0 else "不足"
+            st.metric("平日住院", f"{ratio:.2f}", delta)
+        
+        with col3:
+            ratio = analysis['holiday_attending_ratio']
+            delta = "充足" if ratio >= 1.5 else "緊張" if ratio >= 1.0 else "不足"
+            st.metric("假日主治", f"{ratio:.2f}", delta)
+        
+        with col4:
+            ratio = analysis['holiday_resident_ratio']
+            delta = "充足" if ratio >= 1.5 else "緊張" if ratio >= 1.0 else "不足"
+            st.metric("假日住院", f"{ratio:.2f}", delta)
+        
+        # 瓶頸指標
+        st.metric("🔴 最小供需比（瓶頸）", f"{analysis['min_supply_ratio']:.2f}")
+        
+        # 第三行：搜索空間分析
+        st.subheader("🔍 搜索空間分析")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.metric("搜索空間(log10)", f"{analysis['search_space_log10']:.1f}")
+        
+        with col2:
+            st.metric("困難日數量", 
+                     f"{analysis['hardest_days_count']}天",
+                     f"每日選項中位數: {analysis['median_daily_options']:.0f}")
+        
+        with col3:
+            # 顯示可行性細節
+            details = analysis['feasibility_details']
+            if not details['overall']:
+                problems = []
+                if not details['weekday_attending']:
+                    problems.append("平日主治")
+                if not details['weekday_resident']:
+                    problems.append("平日住院")
+                if not details['holiday_attending']:
+                    problems.append("假日主治")
+                if not details['holiday_resident']:
+                    problems.append("假日住院")
+                if details['daily_gaps']:
+                    problems.append(f"{len(details['daily_gaps'])}天無人")
+                
+                st.error("不可行原因：" + "、".join(problems))
+        
+        # 顯示瓶頸詳情
         if analysis['bottlenecks']:
-            st.warning("識別到的瓶頸：")
+            st.warning("⚠️ 識別到的瓶頸：")
             for bottleneck in analysis['bottlenecks']:
                 st.write(f"• {bottleneck}")
+        
+        # 顯示特定問題日期（如果有）
+        if analysis['feasibility_details']['daily_gaps']:
+            with st.expander("🚨 問題日期詳情", expanded=False):
+                gaps = analysis['feasibility_details']['daily_gaps']
+                gap_df = pd.DataFrame(gaps)
+                st.dataframe(gap_df, use_container_width=True)
 
 def render_schedule_parameters(weekdays: list, holidays: list):
     """渲染排班參數"""
     st.subheader("📋 排班參數")
     
     attending_count = len([d for d in st.session_state.doctors if d.role == "主治"])
-    resident_count = len([d for d in st.session_state.doctors if d.role == "住院"])
+    resident_count = len([d for d in st.session_state.doctors if d.role == "總醫師"])
     
     col1, col2, col3 = st.columns(3)
     with col1:

@@ -40,7 +40,7 @@ class ScheduleTable:
                 
                 if not slot.resident:
                     avail = scheduler.get_available_doctors(
-                        date_str, "住院", schedule,
+                        date_str, "總醫師", schedule,
                         scheduler.doctor_map, scheduler.constraints,
                         scheduler.weekdays, scheduler.holidays
                     )

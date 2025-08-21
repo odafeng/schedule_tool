@@ -23,7 +23,7 @@ def render():
         render_doctor_list("主治")
     
     with col2:
-        render_doctor_list("住院")
+        render_doctor_list("總醫師")
 
 def render_test_data_loader():
     """渲染測試資料載入器"""
@@ -51,7 +51,7 @@ def render_test_data_loader():
             for i in range(1, 8):
                 st.session_state.doctors.append(Doctor(
                     name=f"住院{i}",
-                    role="住院",
+                    role="總醫師",
                     weekday_quota=5,
                     holiday_quota=2,
                     unavailable_dates=[],
@@ -96,7 +96,7 @@ def render_test_data_loader():
                 unavail = dates[i:i+3] if i < 7 else []
                 st.session_state.doctors.append(Doctor(
                     name=f"住院{i}",
-                    role="住院",
+                    role="總醫師",
                     weekday_quota=4,
                     holiday_quota=2,
                     unavailable_dates=unavail,
@@ -119,7 +119,7 @@ def render_test_data_loader():
             for i in range(1, 11):
                 st.session_state.doctors.append(Doctor(
                     name=f"住院{i:02d}",
-                    role="住院",
+                    role="總醫師",
                     weekday_quota=3,
                     holiday_quota=1,
                     unavailable_dates=[],
@@ -136,7 +136,7 @@ def render_add_doctor_form():
         
         with col1:
             name = st.text_input("醫師姓名")
-            role = st.selectbox("角色", ["主治", "住院"])
+            role = st.selectbox("角色", ["主治", "總醫師"])
         
         with col2:
             weekday_quota = st.number_input("平日配額", min_value=0, max_value=20, value=5)
@@ -172,7 +172,7 @@ def render_doctor_list(role: str):
         doctors = [d for d in st.session_state.doctors if d.role == "主治"]
     else:
         st.subheader("👨‍⚕️ 住院醫師")
-        doctors = [d for d in st.session_state.doctors if d.role == "住院"]
+        doctors = [d for d in st.session_state.doctors if d.role == "總醫師"]
     
     if doctors:
         for doc in doctors:

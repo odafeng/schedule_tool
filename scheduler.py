@@ -28,7 +28,7 @@ import copy
 class Doctor:
     """醫師資料模型"""
     name: str
-    role: Literal["主治", "住院"]
+    role: Literal["主治", "總醫師"]
     weekday_quota: int  # 平日配額
     holiday_quota: int  # 假日配額
     unavailable_dates: List[str] = field(default_factory=list)  # 不可值班日
@@ -730,7 +730,7 @@ class FeatureExtractor:
         
         # 角色平衡
         attending_duties = [duty_counts[d.name] for d in doctors if d.role == "主治"]
-        resident_duties = [duty_counts[d.name] for d in doctors if d.role == "住院"]
+        resident_duties = [duty_counts[d.name] for d in doctors if d.role == "總醫師"]
         attending_std = np.std(attending_duties) if attending_duties else 0
         resident_std = np.std(resident_duties) if resident_duties else 0
         
@@ -896,7 +896,7 @@ class BeamSearchScheduler:
         self.weekdays = weekdays
         self.holidays = holidays
         self.attending_doctors = [d for d in doctors if d.role == "主治"]
-        self.resident_doctors = [d for d in doctors if d.role == "住院"]
+        self.resident_doctors = [d for d in doctors if d.role == "總醫師"]
         
         # 建立醫師索引
         self.doctor_map = {d.name: d for d in doctors}
@@ -978,7 +978,7 @@ class BeamSearchScheduler:
             iteration += 1
             new_beam = []
             for score, schedule, parent_id in beam:
-                available = self.get_available_doctors(date_str, "住院", schedule)
+                available = self.get_available_doctors(date_str, "總醫師", schedule)
                 
                 if not available:
                     new_beam.append((score, schedule, parent_id))
@@ -1241,7 +1241,7 @@ class BeamSearchScheduler:
             iteration += 1
             new_beam = []
             for score, schedule, parent_id in beam:
-                available = self.get_available_doctors(date_str, "住院", schedule)
+                available = self.get_available_doctors(date_str, "總醫師", schedule)
                 
                 if not available:
                     new_beam.append((score, schedule, parent_id))
@@ -1306,7 +1306,7 @@ class BeamSearchScheduler:
             if not slot.attending:
                 unfilled.append((date_str, "主治"))
             if not slot.resident:
-                unfilled.append((date_str, "住院"))
+                unfilled.append((date_str, "總醫師"))
         
         if not unfilled:
             return schedule
@@ -1467,7 +1467,7 @@ class BeamSearchScheduler:
             if not slot.attending:
                 unfilled.append((date_str, "主治"))
             if not slot.resident:
-                unfilled.append((date_str, "住院"))
+                unfilled.append((date_str, "總醫師"))
         
         # 生成建議
         suggestions = []
@@ -1742,7 +1742,7 @@ with tab1:
                 for i in range(1, 8):
                     st.session_state.doctors.append(Doctor(
                         name=f"住院{i}",
-                        role="住院",
+                        role="總醫師",
                         weekday_quota=5,
                         holiday_quota=2,
                         unavailable_dates=[],
@@ -1787,7 +1787,7 @@ with tab1:
                     unavail = dates[i:i+3] if i < 7 else []
                     st.session_state.doctors.append(Doctor(
                         name=f"住院{i}",
-                        role="住院",
+                        role="總醫師",
                         weekday_quota=4,
                         holiday_quota=2,
                         unavailable_dates=unavail,
@@ -1810,7 +1810,7 @@ with tab1:
                 for i in range(1, 11):
                     st.session_state.doctors.append(Doctor(
                         name=f"住院{i:02d}",
-                        role="住院",
+                        role="總醫師",
                         weekday_quota=3,
                         holiday_quota=1,
                         unavailable_dates=[],
@@ -1826,7 +1826,7 @@ with tab1:
             col1, col2, col3 = st.columns(3)
             with col1:
                 name = st.text_input("醫師姓名")
-                role = st.selectbox("角色", ["主治", "住院"])
+                role = st.selectbox("角色", ["主治", "總醫師"])
             with col2:
                 weekday_quota = st.number_input("平日配額", min_value=0, max_value=20, value=5)
                 holiday_quota = st.number_input("假日配額", min_value=0, max_value=10, value=2)
@@ -1875,7 +1875,7 @@ with tab1:
     
     with col2:
         st.subheader("👨‍⚕️ 住院醫師")
-        residents = [d for d in st.session_state.doctors if d.role == "住院"]
+        residents = [d for d in st.session_state.doctors if d.role == "總醫師"]
         if residents:
             for doc in residents:
                 with st.container():
@@ -1989,7 +1989,7 @@ with tab3:
     
     # 檢查前置條件
     attending_count = len([d for d in st.session_state.doctors if d.role == "主治"])
-    resident_count = len([d for d in st.session_state.doctors if d.role == "住院"])
+    resident_count = len([d for d in st.session_state.doctors if d.role == "總醫師"])
     
     if attending_count == 0 or resident_count == 0:
         st.error("請先新增至少一位主治醫師和一位住院醫師")
@@ -2278,7 +2278,7 @@ with tab4:
                         cell_html += f'<div class="doctor-info resident">👨‍⚕️ 住院: {slot.resident}</div>'
                     else:
                         # 顯示未填格和可選醫師
-                        available_resident = scheduler.get_available_doctors(date_str, "住院", result.schedule)
+                        available_resident = scheduler.get_available_doctors(date_str, "總醫師", result.schedule)
                         cell_html += '<div class="empty-slot">❌ 住院未排</div>'
                         if available_resident:
                             cell_html += f'<div class="available-doctors">可選: {", ".join(available_resident[:3])}'
@@ -2359,7 +2359,7 @@ with tab4:
                         avail = scheduler.get_available_doctors(date_str, "主治", result.schedule)
                         attending_available = f"可選: {', '.join(avail[:5])}" if avail else "無可用"
                     if not slot.resident:
-                        avail = scheduler.get_available_doctors(date_str, "住院", result.schedule)
+                        avail = scheduler.get_available_doctors(date_str, "總醫師", result.schedule)
                         resident_available = f"可選: {', '.join(avail[:5])}" if avail else "無可用"
                     
                     schedule_data.append({
@@ -2480,7 +2480,7 @@ with tab5:
                               if any(d.name == name and d.role == "主治" 
                                    for d in st.session_state.doctors)}
             resident_duties = {name: count for name, count in duty_counts.items() 
-                             if any(d.name == name and d.role == "住院" 
+                             if any(d.name == name and d.role == "總醫師" 
                                   for d in st.session_state.doctors)}
             
             col1, col2 = st.columns(2)

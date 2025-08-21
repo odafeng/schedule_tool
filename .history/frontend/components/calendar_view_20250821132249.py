@@ -120,7 +120,7 @@ class CalendarView:
         else:
             # 顯示未填格和可選醫師
             available_resident = scheduler.get_available_doctors(
-                date_str, "住院", schedule,
+                date_str, "總醫師", schedule,
                 scheduler.doctor_map, scheduler.constraints,
                 scheduler.weekdays, scheduler.holidays
             )

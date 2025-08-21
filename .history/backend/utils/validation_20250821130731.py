@@ -20,7 +20,7 @@ def validate_doctor_data(doctors: List[Doctor]) -> Tuple[bool, List[str]]:
     
     # 檢查是否有主治和住院醫師
     attending_count = sum(1 for d in doctors if d.role == "主治")
-    resident_count = sum(1 for d in doctors if d.role == "住院")
+    resident_count = sum(1 for d in doctors if d.role == "總醫師")
     
     if attending_count == 0:
         errors.append("至少需要一位主治醫師")

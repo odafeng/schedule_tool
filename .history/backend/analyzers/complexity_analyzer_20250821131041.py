@@ -21,7 +21,7 @@ class ComplexityAnalyzer:
         total_slots = total_days * 2  # 每天2個角色
         
         attending_doctors = [d for d in doctors if d.role == "主治"]
-        resident_doctors = [d for d in doctors if d.role == "住院"]
+        resident_doctors = [d for d in doctors if d.role == "總醫師"]
         
         # 計算供需比
         total_weekday_supply = sum(d.weekday_quota for d in doctors)
@@ -108,7 +108,7 @@ class ComplexityAnalyzer:
         bottlenecks = []
         
         attending = [d for d in doctors if d.role == "主治"]
-        resident = [d for d in doctors if d.role == "住院"]
+        resident = [d for d in doctors if d.role == "總醫師"]
         
         # 檢查角色平衡
         if len(attending) < len(weekdays + holidays) / 5:
