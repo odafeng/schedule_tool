@@ -34,162 +34,132 @@ class InteractiveCalendarView:
         self._render_legend()
     
     def _get_calendar_styles(self) -> str:
-        """取得日曆樣式 - 簡潔專業風格"""
+        """取得日曆樣式"""
         return """
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
         .calendar-container {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            padding: 24px;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-            margin: 20px 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         .calendar-header {
             text-align: center;
-            font-size: 28px;
-            font-weight: 600;
-            margin-bottom: 24px;
-            color: #1e293b;
-            letter-spacing: -0.5px;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2c3e50;
         }
         
         .calendar-table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 4px;
+            border-spacing: 3px;
         }
         
         .calendar-weekday {
-            background: #475569;
-            color: #ffffff;
-            padding: 14px 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
             text-align: center;
-            font-weight: 600;
+            font-weight: bold;
             font-size: 14px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
+            border-radius: 5px;
         }
         
         .calendar-day {
-            background: #f8fafc;
-            min-height: 140px;
-            padding: 12px;
+            background: #f8f9fa;
+            min-height: 120px;
+            padding: 8px;
             vertical-align: top;
             position: relative;
-            border: 2px solid #e2e8f0;
-            transition: all 0.2s ease;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            transition: all 0.3s ease;
         }
         
         .calendar-day:hover {
-            border-color: #3b82f6;
-            background: #ffffff;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
             z-index: 10;
         }
         
         .calendar-day.holiday {
-            background: #fef2f2;
-            border-color: #fecaca;
+            background: linear-gradient(135deg, #ffe5e5 0%, #ffcccc 100%);
         }
         
         .calendar-day.weekend {
-            background: #fefce8;
-            border-color: #fde68a;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe5a1 100%);
         }
         
         .day-number {
-            font-weight: 700;
-            color: #334155;
-            margin-bottom: 8px;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .day-icon {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 5px;
             font-size: 14px;
         }
         
         .doctor-slot {
-            font-size: 13px;
-            padding: 6px 10px;
-            margin: 4px 0;
-            border-radius: 6px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            font-size: 11px;
+            padding: 3px 6px;
+            margin: 3px 0;
+            border-radius: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .attending-slot {
-            background: #dcfce7;
-            color: #14532d;
-            border: 1px solid #86efac;
+            background: linear-gradient(90deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border-left: 3px solid #28a745;
         }
         
         .resident-slot {
-            background: #dbeafe;
-            color: #1e3a8a;
-            border: 1px solid #93c5fd;
+            background: linear-gradient(90deg, #d1ecf1 0%, #bee5eb 100%);
+            color: #0c5460;
+            border-left: 3px solid #17a2b8;
         }
         
         .empty-slot {
-            background: #fee2e2;
-            color: #7f1d1d;
-            border: 1px solid #fca5a5;
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 3px solid #dc3545;
             cursor: help;
             position: relative;
-            padding: 6px 10px;
-            margin: 4px 0;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            padding: 3px 6px;
+            margin: 3px 0;
+            border-radius: 4px;
+            font-size: 11px;
         }
         
-        .empty-slot:hover {
-            background: #fecaca;
-        }
-        
-        /* Tooltip 樣式 */
         .gap-info {
             display: none;
             position: absolute;
-            bottom: calc(100% + 10px);
+            bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
-            background: #1e293b;
-            color: #ffffff;
-            padding: 16px;
-            border-radius: 10px;
-            font-size: 13px;
-            width: 320px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            width: 280px;
             z-index: 1000;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            line-height: 1.5;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-bottom: 5px;
         }
         
         .empty-slot:hover .gap-info {
             display: block;
-            animation: tooltipFadeIn 0.2s ease;
+            animation: fadeIn 0.3s ease;
         }
         
-        @keyframes tooltipFadeIn {
-            from { 
-                opacity: 0; 
-                transform: translateX(-50%) translateY(5px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateX(-50%) translateY(0); 
-            }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
         
         .gap-info::after {
@@ -198,122 +168,90 @@ class InteractiveCalendarView:
             top: 100%;
             left: 50%;
             transform: translateX(-50%);
-            border: 10px solid transparent;
-            border-top-color: #1e293b;
+            border: 8px solid transparent;
+            border-top-color: #34495e;
         }
         
         .gap-info-title {
-            font-weight: 600;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #475569;
-            color: #60a5fa;
-            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            color: #3498db;
+            font-size: 13px;
         }
         
         .doctors-section {
-            margin: 10px 0;
+            margin: 6px 0;
         }
         
         .doctors-section-title {
-            font-weight: 600;
-            margin-bottom: 6px;
-            font-size: 12px;
-            color: #e2e8f0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .doctor-badge {
-            padding: 4px 10px;
-            border-radius: 16px;
-            margin: 3px;
-            display: inline-block;
-            font-size: 12px;
-            font-weight: 500;
+            font-weight: bold;
+            margin-bottom: 4px;
+            font-size: 11px;
         }
         
         .doctor-available {
-            background: #10b981;
-            color: #ffffff;
+            background: #27ae60;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin: 2px;
+            display: inline-block;
+            font-size: 10px;
         }
         
         .doctor-restricted {
-            background: #f59e0b;
-            color: #ffffff;
+            background: #e67e22;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin: 2px;
+            display: inline-block;
+            font-size: 10px;
         }
         
         .reason-text {
-            font-size: 11px;
-            color: #94a3b8;
-            margin-top: 4px;
+            font-size: 9px;
+            color: #ecf0f1;
+            font-style: italic;
+            margin-left: 10px;
             display: block;
-            font-style: normal;
         }
         
         .no-doctors-text {
-            color: #94a3b8;
-            font-size: 12px;
-            padding: 8px 0;
+            color: #95a5a6;
+            font-style: italic;
+            font-size: 10px;
         }
         
-        /* 圖例樣式 */
         .calendar-legend {
-            margin-top: 24px;
-            padding: 20px;
-            background: #f8fafc;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 8px;
         }
         
         .legend-title {
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: #1e293b;
-            font-size: 16px;
-        }
-        
-        .legend-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
         }
         
         .legend-item {
-            display: flex;
-            align-items: center;
-            font-size: 14px;
-            color: #475569;
+            display: inline-block;
+            margin: 5px 15px 5px 0;
+            font-size: 13px;
         }
         
         .legend-color {
             display: inline-block;
-            width: 32px;
-            height: 20px;
-            margin-right: 10px;
-            border-radius: 4px;
-        }
-        
-        /* 響應式設計 */
-        @media (max-width: 768px) {
-            .calendar-day {
-                min-height: 100px;
-                padding: 8px;
-            }
-            
-            .day-number {
-                font-size: 14px;
-            }
-            
-            .doctor-slot, .empty-slot {
-                font-size: 11px;
-                padding: 4px 6px;
-            }
-            
-            .gap-info {
-                width: 280px;
-                font-size: 12px;
-            }
+            width: 24px;
+            height: 14px;
+            margin-right: 6px;
+            border-radius: 3px;
+            vertical-align: middle;
+            border: 1px solid rgba(0,0,0,0.1);
         }
         </style>
         """
@@ -327,12 +265,12 @@ class InteractiveCalendarView:
         """生成月曆HTML"""
         
         html = '<div class="calendar-container">'
-        html += f'<div class="calendar-header">{self.year}年 {self.month}月 排班表</div>'
+        html += f'<div class="calendar-header">📅 {self.year}年 {self.month}月 排班表</div>'
         html += '<table class="calendar-table">'
         
         # 星期標題
         html += '<tr>'
-        for day_name in ['一', '二', '三', '四', '五', '六', '日']:
+        for day_name in ['週一', '週二', '週三', '週四', '週五', '週六', '週日']:
             html += f'<td class="calendar-weekday">{day_name}</td>'
         html += '</tr>'
         
@@ -376,12 +314,11 @@ class InteractiveCalendarView:
             cell_class += " weekend"
         
         html = f'<td class="{cell_class}">'
-        html += f'<div class="day-number">'
-        html += f'{day}'
+        html += f'<div class="day-number">{day}日'
         if is_holiday:
-            html += '<span class="day-icon">🔴</span>'
+            html += ' 🎉'
         elif is_weekend:
-            html += '<span class="day-icon">🟡</span>'
+            html += ' 🌟'
         html += '</div>'
         
         # 顯示排班資訊
@@ -390,7 +327,7 @@ class InteractiveCalendarView:
             
             # 主治醫師
             if slot.attending:
-                html += f'<div class="doctor-slot attending-slot">主治｜{slot.attending}</div>'
+                html += f'<div class="doctor-slot attending-slot">👨‍⚕️ 主治: {slot.attending}</div>'
             else:
                 html += self._generate_empty_slot_html(
                     date_str, "主治", gap_details
@@ -398,7 +335,7 @@ class InteractiveCalendarView:
             
             # 住院醫師  
             if slot.resident:
-                html += f'<div class="doctor-slot resident-slot">住院｜{slot.resident}</div>'
+                html += f'<div class="doctor-slot resident-slot">👩‍⚕️ 住院: {slot.resident}</div>'
             else:
                 html += self._generate_empty_slot_html(
                     date_str, "住院", gap_details
@@ -413,7 +350,7 @@ class InteractiveCalendarView:
         """生成空格的HTML（含hover提示）"""
         
         html = '<div class="empty-slot">'
-        html += f'空缺｜{role}'
+        html += f'❌ {role}未排'
         
         # 添加hover提示
         if gap_details and date_str in gap_details:
@@ -421,30 +358,27 @@ class InteractiveCalendarView:
                 info = gap_details[date_str][role]
                 
                 html += '<div class="gap-info">'
-                html += f'<div class="gap-info-title">{date_str} {role}醫師狀況</div>'
+                html += f'<div class="gap-info-title">📋 {date_str} {role}醫師狀況</div>'
                 
-                # 可直接安排的醫師
+                # 可直接安排的醫師（原B類）
                 if info.get('available_doctors'):
                     html += '<div class="doctors-section">'
-                    html += '<div class="doctors-section-title">可直接安排</div>'
-                    html += '<div>'
+                    html += '<div class="doctors-section-title">✅ 可直接安排：</div>'
                     for doc in info['available_doctors'][:5]:
-                        html += f'<span class="doctor-badge doctor-available">{doc}</span>'
+                        html += f'<span class="doctor-available">{doc}</span>'
                     if len(info['available_doctors']) > 5:
-                        html += f'<span class="reason-text">另有 {len(info["available_doctors"])-5} 位醫師可選</span>'
-                    html += '</div></div>'
+                        html += f'<span class="reason-text">...還有{len(info["available_doctors"])-5}位醫師</span>'
+                    html += '</div>'
                 
-                # 需要調整的醫師
+                # 需要調整的醫師（原A類）
                 if info.get('restricted_doctors'):
                     html += '<div class="doctors-section">'
-                    html += '<div class="doctors-section-title">需調整後可安排</div>'
+                    html += '<div class="doctors-section-title">⚠️ 需調整後可安排：</div>'
                     for doc_info in info['restricted_doctors'][:3]:
-                        html += f'<div style="margin: 6px 0;">'
-                        html += f'<span class="doctor-badge doctor-restricted">{doc_info["name"]}</span>'
-                        html += f'<span class="reason-text">{doc_info["reason"]}</span>'
-                        html += '</div>'
+                        html += f'<span class="doctor-restricted">{doc_info["name"]}</span>'
+                        html += f'<span class="reason-text">原因：{doc_info["reason"]}</span>'
                     if len(info['restricted_doctors']) > 3:
-                        html += f'<span class="reason-text">另有 {len(info["restricted_doctors"])-3} 位醫師</span>'
+                        html += f'<span class="reason-text">...還有{len(info["restricted_doctors"])-3}位醫師</span>'
                     html += '</div>'
                 
                 # 統計資訊
@@ -452,7 +386,7 @@ class InteractiveCalendarView:
                     html += '<div class="no-doctors-text">⚠️ 目前沒有可用的醫師</div>'
                 
                 if info.get('unavailable_count', 0) > 0:
-                    html += f'<div class="reason-text" style="margin-top:12px; padding-top:12px; border-top:1px solid #475569;">另有 {info["unavailable_count"]} 位醫師因請假或其他原因不可值班</div>'
+                    html += f'<div class="reason-text" style="margin-top:8px;">另有 {info["unavailable_count"]} 位醫師因請假或其他原因不可值班</div>'
                 
                 html += '</div>'
         
@@ -464,28 +398,26 @@ class InteractiveCalendarView:
         """渲染圖例"""
         st.markdown("""
         <div class="calendar-legend">
-            <div class="legend-title">圖例說明</div>
-            <div class="legend-grid">
-                <div class="legend-item">
-                    <span class="legend-color" style="background: #dcfce7; border: 1px solid #86efac;"></span>
-                    主治醫師已排班
-                </div>
-                <div class="legend-item">
-                    <span class="legend-color" style="background: #dbeafe; border: 1px solid #93c5fd;"></span>
-                    住院醫師已排班
-                </div>
-                <div class="legend-item">
-                    <span class="legend-color" style="background: #fee2e2; border: 1px solid #fca5a5;"></span>
-                    空缺（滑鼠移上查看詳情）
-                </div>
-                <div class="legend-item">
-                    <span class="legend-color" style="background: #fef2f2; border: 1px solid #fecaca;"></span>
-                    國定假日
-                </div>
-                <div class="legend-item">
-                    <span class="legend-color" style="background: #fefce8; border: 1px solid #fde68a;"></span>
-                    週末
-                </div>
+            <div class="legend-title">📍 圖例說明</div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: linear-gradient(90deg, #d4edda 0%, #c3e6cb 100%);"></span>
+                主治醫師已排班
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: linear-gradient(90deg, #d1ecf1 0%, #bee5eb 100%);"></span>
+                住院醫師已排班
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: #f8d7da;"></span>
+                未排班（滑鼠移上查看詳情）
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: linear-gradient(135deg, #ffe5e5 0%, #ffcccc 100%);"></span>
+                國定假日
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: linear-gradient(135deg, #fff3cd 0%, #ffe5a1 100%);"></span>
+                週末
             </div>
         </div>
         """, unsafe_allow_html=True)

@@ -1,10 +1,9 @@
 """
-Stage 2: 進階智慧交換補洞系統（完整優化版）
-包含深度搜索、多步交換鏈、回溯機制
+Stage 2: 進階智慧交換補洞系統（完整版）
+包含前瞻性評估、多步交換鏈、回溯機制
 """
 import streamlit as st
 import copy
-import time
 from typing import List, Dict, Tuple, Optional, Set, Any
 from dataclasses import dataclass, field
 from collections import defaultdict
@@ -50,7 +49,6 @@ class SwapChain:
     total_score: float = 0.0
     feasible: bool = True
     validation_message: str = ""
-    complexity: int = 0  # 新增：複雜度評分
 
 @dataclass
 class BacktrackState:
@@ -90,16 +88,6 @@ class Stage2AdvancedSwapper:
         
         # 回溯堆疊
         self.backtrack_stack = []
-        
-        # 搜索統計
-        self.search_stats = {
-            'chains_explored': 0,
-            'chains_found': 0,
-            'search_time': 0,
-            'max_depth_reached': 0
-        }
-        
-        st.info("🔧 Stage 2 系統初始化完成")
     
     def _count_all_duties(self) -> Dict[str, Dict]:
         """計算所有醫師的當前班數"""
@@ -164,8 +152,6 @@ class Stage2AdvancedSwapper:
         
         gaps.sort(key=lambda x: -x.priority_score)
         
-        st.info(f"📊 找到 {len(gaps)} 個空缺需要處理")
-        
         return gaps
     
     def _analyze_single_gap_advanced(self, date: str, role: str) -> Optional[GapInfo]:
@@ -224,6 +210,7 @@ class Stage2AdvancedSwapper:
     def _is_weekend(self, date_str: str) -> bool:
         """判斷是否為週末"""
         try:
+            from datetime import datetime
             dt = datetime.strptime(date_str, "%Y-%m-%d")
             return dt.weekday() in [5, 6]  # 週六、週日
         except:
@@ -246,22 +233,29 @@ class Stage2AdvancedSwapper:
     
     def _calculate_opportunity_cost(self, gap: GapInfo) -> float:
         """計算機會成本"""
+        # 如果有B類醫師，機會成本較低
         if gap.candidates_with_quota:
-            return 10.0  # B類醫師，機會成本較低
+            return 10.0
         
+        # 如果只有A類醫師，需要交換，成本較高
         if gap.candidates_over_quota:
-            return 50.0  # A類醫師，需要交換，成本較高
+            return 50.0
         
-        return 100.0  # 無解，成本最高
+        # 無解，成本最高
+        return 100.0
     
     def _calculate_future_impact(self, gap: GapInfo) -> float:
         """計算對未來排班的影響"""
         impact = 0.0
         
+        # 計算該日期在月份中的位置
         try:
             dt = datetime.strptime(gap.date, "%Y-%m-%d")
             days_from_end = 31 - dt.day
-            impact = days_from_end * 2  # 越接近月底，影響越小
+            
+            # 越接近月底，影響越小
+            impact = days_from_end * 2
+            
         except:
             impact = 50.0
         
@@ -292,185 +286,29 @@ class Stage2AdvancedSwapper:
         )
     
     def find_multi_step_swap_chains(self, gap: GapInfo, max_depth: int = 3) -> List[SwapChain]:
-        """尋找多步交換鏈 - 深度搜索版本"""
-        st.info(f"🔍 開始深度搜索 {gap.date} {gap.role} 的交換鏈...")
-        
+        """尋找多步交換鏈"""
         chains = []
-        visited_states = set()  # 避免重複搜索
         
-        # 設定搜索時間限制
-        start_time = time.time()
-        max_search_time = 120  # 最多搜索2分鐘
-        
-        # 重置搜索統計
-        self.search_stats = {
-            'chains_explored': 0,
-            'chains_found': 0,
-            'search_time': 0,
-            'max_depth_reached': 0
-        }
-        
-        # 對每個需要交換的醫師進行搜索
+        # 只考慮A類醫師（需要交換的）
         for doctor_name in gap.candidates_over_quota:
-            if time.time() - start_time > max_search_time:
-                st.warning(f"⏱️ 搜索時間已達上限 ({max_search_time}秒)")
-                break
-            
-            st.text(f"🔄 搜索醫師 {doctor_name} 的交換方案...")
-            
             doctor = self.doctor_map[doctor_name]
             
-            # 使用遞迴深度搜索
-            initial_chain = SwapChain(steps=[], total_score=0, feasible=True, complexity=0)
-            
-            self._recursive_search_swap_chains(
-                gap, doctor, initial_chain, chains, 
-                visited_states, max_depth, 0, start_time, max_search_time
-            )
-        
-        # 如果找到的交換鏈太少，嘗試更激進的策略
-        if len(chains) < 5:
-            st.info("💡 嘗試激進搜索策略...")
-            chains.extend(self._find_aggressive_swap_chains(gap, max_depth))
-        
-        # 去重並排序
-        chains = self._deduplicate_chains(chains)
-        chains.sort(key=lambda x: (-x.total_score, x.complexity))
-        
-        # 更新統計
-        self.search_stats['search_time'] = time.time() - start_time
-        self.search_stats['chains_found'] = len(chains)
-        
-        st.success(f"""
-        ✅ 搜索完成！
-        - 搜索時間：{self.search_stats['search_time']:.2f} 秒
-        - 探索路徑：{self.search_stats['chains_explored']} 條
-        - 找到方案：{self.search_stats['chains_found']} 個
-        - 最大深度：{self.search_stats['max_depth_reached']} 層
-        """)
-        
-        return chains[:20]  # 返回前20個方案
-    
-    def _recursive_search_swap_chains(self, gap: GapInfo, doctor: Doctor, 
-                                     current_chain: SwapChain, all_chains: List[SwapChain],
-                                     visited: Set, max_depth: int, current_depth: int,
-                                     start_time: float, max_search_time: float):
-        """遞迴搜索交換鏈"""
-        
-        # 更新統計
-        self.search_stats['chains_explored'] += 1
-        if current_depth > self.search_stats['max_depth_reached']:
-            self.search_stats['max_depth_reached'] = current_depth
-        
-        # 終止條件
-        if current_depth >= max_depth:
-            return
-        if time.time() - start_time > max_search_time:
-            return
-        
-        # 生成狀態簽名避免重複
-        state_sig = self._generate_state_signature(current_chain)
-        if state_sig in visited:
-            return
-        visited.add(state_sig)
-        
-        # 每探索100條路徑顯示進度
-        if self.search_stats['chains_explored'] % 100 == 0:
-            st.text(f"   已探索 {self.search_stats['chains_explored']} 條路徑...")
-        
-        if current_depth == 0:
-            # 第一層：找出該醫師所有可移除的班次
+            # 找出該醫師可以被移除的班次
             removable_shifts = self._find_removable_shifts(doctor, gap)
             
             for shift_date, shift_role in removable_shifts:
-                # 創建第一步：移動醫師到空缺
-                step1 = SwapStep(
-                    description=f"{doctor.name} 從 {shift_date} 移至 {gap.date}",
-                    from_date=shift_date,
-                    to_date=gap.date,
-                    doctor=doctor.name,
-                    role=gap.role,
-                    impact_score=self._calculate_step_impact(shift_date, gap.date)
+                # 嘗試建立交換鏈
+                chain = self._build_swap_chain(
+                    gap, doctor, shift_date, shift_role, max_depth
                 )
                 
-                new_chain = SwapChain(
-                    steps=[step1],
-                    total_score=0,
-                    feasible=True,
-                    complexity=1
-                )
-                
-                # 搜索誰可以接手 shift_date
-                self._search_replacement_for_shift(
-                    shift_date, shift_role, doctor.role, new_chain, 
-                    all_chains, visited, max_depth, current_depth + 1,
-                    start_time, max_search_time
-                )
-    
-    def _search_replacement_for_shift(self, shift_date: str, shift_role: str, 
-                                     original_role: str, current_chain: SwapChain,
-                                     all_chains: List[SwapChain], visited: Set,
-                                     max_depth: int, current_depth: int,
-                                     start_time: float, max_search_time: float):
-        """搜索誰可以接手某個班次"""
+                if chain and chain.feasible:
+                    chains.append(chain)
         
-        # 終止條件檢查
-        if time.time() - start_time > max_search_time:
-            return
+        # 按分數排序
+        chains.sort(key=lambda x: -x.total_score)
         
-        # 找出所有可能接手的醫師
-        candidates = self._find_all_replacement_candidates(shift_date, shift_role, original_role)
-        
-        # 按優先級排序候選人
-        candidates = self._prioritize_candidates(candidates, shift_date)
-        
-        for candidate in candidates[:15]:  # 考慮前15個候選人
-            if candidate['type'] == 'direct':
-                # 可以直接接手（有配額）
-                step = SwapStep(
-                    description=f"{candidate['name']} 直接接手 {shift_date} 的班",
-                    from_date="",
-                    to_date=shift_date,
-                    doctor=candidate['name'],
-                    role=shift_role,
-                    impact_score=5.0
-                )
-                
-                final_chain = SwapChain(
-                    steps=current_chain.steps + [step],
-                    total_score=self._evaluate_chain(current_chain.steps + [step]),
-                    feasible=True,
-                    validation_message="可行的交換鏈",
-                    complexity=len(current_chain.steps) + 1
-                )
-                
-                all_chains.append(final_chain)
-                self.search_stats['chains_found'] += 1
-                
-            elif candidate['type'] == 'needs_swap' and current_depth < max_depth:
-                # 需要進一步交換
-                step = SwapStep(
-                    description=f"{candidate['name']} 從 {candidate['from_date']} 換到 {shift_date}",
-                    from_date=candidate['from_date'],
-                    to_date=shift_date,
-                    doctor=candidate['name'],
-                    role=shift_role,
-                    impact_score=8.0
-                )
-                
-                new_chain = SwapChain(
-                    steps=current_chain.steps + [step],
-                    total_score=current_chain.total_score,
-                    feasible=True,
-                    complexity=len(current_chain.steps) + 1
-                )
-                
-                # 遞迴：現在需要填補 candidate['from_date'] 的空缺
-                self._search_replacement_for_shift(
-                    candidate['from_date'], candidate['from_role'], candidate['role'],
-                    new_chain, all_chains, visited, max_depth, current_depth + 1,
-                    start_time, max_search_time
-                )
+        return chains[:10]  # 返回前10個最佳方案
     
     def _find_removable_shifts(self, doctor: Doctor, gap: GapInfo) -> List[Tuple[str, str]]:
         """找出醫師可以被移除的班次"""
@@ -497,343 +335,60 @@ class Stage2AdvancedSwapper:
         
         return removable
     
-    def _find_all_replacement_candidates(self, date: str, role: str, 
-                                        original_role: str) -> List[Dict]:
-        """找出所有可能接手班次的候選人"""
-        candidates = []
-        is_holiday = date in self.holidays
-        
-        for doctor in self.doctors:
-            if doctor.role != original_role:
-                continue
-            
-            # 基本檢查
-            if date in doctor.unavailable_dates:
-                continue
-            
-            # 檢查是否已在同一天有班
-            slot = self.schedule[date]
-            if doctor.name in [slot.attending, slot.resident]:
-                continue
-            
-            # 檢查連續值班
-            if check_consecutive_days(self.schedule, doctor.name, date, 
-                                     self.constraints.max_consecutive_days):
-                continue
-            
-            # 檢查配額
-            current = self.current_duties[doctor.name]
-            
-            if is_holiday:
-                if current['holiday'] < doctor.holiday_quota:
-                    # 可以直接接手
-                    candidates.append({
-                        'name': doctor.name,
-                        'type': 'direct',
-                        'priority': 1,
-                        'score': 100 - current['total']  # 班數越少優先級越高
-                    })
-                else:
-                    # 需要交換其他班次
-                    swappable_dates = self._find_swappable_dates_for_doctor(doctor, is_holiday)
-                    for swap_date, swap_role in swappable_dates:
-                        candidates.append({
-                            'name': doctor.name,
-                            'type': 'needs_swap',
-                            'from_date': swap_date,
-                            'from_role': swap_role,
-                            'role': doctor.role,
-                            'priority': 2,
-                            'score': 50 - current['total']
-                        })
-            else:
-                # 平日邏輯
-                if current['weekday'] < doctor.weekday_quota:
-                    candidates.append({
-                        'name': doctor.name,
-                        'type': 'direct',
-                        'priority': 1,
-                        'score': 100 - current['total']
-                    })
-                else:
-                    swappable_dates = self._find_swappable_dates_for_doctor(doctor, is_holiday)
-                    for swap_date, swap_role in swappable_dates:
-                        candidates.append({
-                            'name': doctor.name,
-                            'type': 'needs_swap',
-                            'from_date': swap_date,
-                            'from_role': swap_role,
-                            'role': doctor.role,
-                            'priority': 2,
-                            'score': 50 - current['total']
-                        })
-        
-        return candidates
-    
-    def _find_swappable_dates_for_doctor(self, doctor: Doctor, is_holiday: bool) -> List[Tuple[str, str]]:
-        """找出醫師可以交換的班次"""
-        swappable = []
-        
-        for date_str, slot in self.schedule.items():
-            # 只找同類型的班次
-            date_is_holiday = date_str in self.holidays
-            if date_is_holiday != is_holiday:
-                continue
-            
-            # 檢查是否為該醫師的班
-            if slot.attending == doctor.name and doctor.role == "主治":
-                # 檢查是否被鎖定
-                if (date_str, "主治", doctor.name) not in self.locked_assignments:
-                    swappable.append((date_str, "主治"))
-            
-            if slot.resident == doctor.name and doctor.role == "總醫師":
-                if (date_str, "總醫師", doctor.name) not in self.locked_assignments:
-                    swappable.append((date_str, "總醫師"))
-        
-        return swappable
-    
-    def _prioritize_candidates(self, candidates: List[Dict], date: str) -> List[Dict]:
-        """按優先級排序候選人"""
-        # 先按類型排序（direct優先），再按分數排序
-        return sorted(candidates, key=lambda x: (x['priority'], -x['score']))
-    
-    def _find_aggressive_swap_chains(self, gap: GapInfo, max_depth: int) -> List[SwapChain]:
-        """更激進的搜索策略"""
-        chains = []
-        
-        st.text("   嘗試跨類型交換...")
-        
-        # 策略1：考慮跨類型交換（假日換平日）
-        for doctor_name in gap.candidates_over_quota:
-            doctor = self.doctor_map[doctor_name]
-            
-            # 找出所有班次（不限同類型）
-            all_shifts = []
-            for date_str, slot in self.schedule.items():
-                if date_str == gap.date:
-                    continue
-                
-                if slot.attending == doctor.name and doctor.role == "主治":
-                    if (date_str, "主治", doctor.name) not in self.locked_assignments:
-                        all_shifts.append((date_str, "主治"))
-                
-                if slot.resident == doctor.name and doctor.role == "總醫師":
-                    if (date_str, "總醫師", doctor.name) not in self.locked_assignments:
-                        all_shifts.append((date_str, "總醫師"))
-            
-            # 嘗試每個班次
-            for shift_date, shift_role in all_shifts[:3]:  # 只試前3個
-                chain = self._try_forced_swap(gap, doctor, shift_date, shift_role)
-                if chain and chain.feasible:
-                    chains.append(chain)
-        
-        # 策略2：多醫師聯合交換
-        if len(gap.candidates_over_quota) >= 2:
-            st.text("   嘗試多醫師聯合交換...")
-            multi_chains = self._try_multi_doctor_swap(gap, max_depth)
-            chains.extend(multi_chains)
-        
-        return chains
-    
-    def _try_forced_swap(self, gap: GapInfo, doctor: Doctor, 
-                        shift_date: str, shift_role: str) -> Optional[SwapChain]:
-        """嘗試強制交換"""
+    def _build_swap_chain(self, gap: GapInfo, doctor: Doctor, 
+                         shift_date: str, shift_role: str, max_depth: int) -> SwapChain:
+        """建立交換鏈"""
         steps = []
         
-        # 第一步：強制移動
+        # 第一步：將醫師從原班次移到空缺
         step1 = SwapStep(
-            description=f"[強制] {doctor.name} 從 {shift_date} 移至 {gap.date}",
+            description=f"{doctor.name} 從 {shift_date} 移至 {gap.date}",
             from_date=shift_date,
             to_date=gap.date,
             doctor=doctor.name,
             role=gap.role,
-            impact_score=15.0  # 強制交換懲罰更高
+            impact_score=10.0
         )
         steps.append(step1)
         
-        # 尋找任何可以接手的人
+        # 尋找接手原班次的醫師
+        replacement_found = False
         for other_doctor in self.doctors:
             if other_doctor.role != doctor.role:
                 continue
             if other_doctor.name == doctor.name:
                 continue
             
-            # 放寬條件檢查
-            if shift_date not in other_doctor.unavailable_dates:
-                slot = self.schedule[shift_date]
-                if other_doctor.name not in [slot.attending, slot.resident]:
-                    step2 = SwapStep(
-                        description=f"[強制] {other_doctor.name} 接手 {shift_date}",
-                        from_date="",
-                        to_date=shift_date,
-                        doctor=other_doctor.name,
-                        role=shift_role,
-                        impact_score=10.0
-                    )
-                    
-                    return SwapChain(
-                        steps=[step1, step2],
-                        total_score=self._evaluate_chain([step1, step2]),
-                        feasible=True,
-                        validation_message="強制交換方案",
-                        complexity=2
-                    )
-        
-        return None
-    
-    def _try_multi_doctor_swap(self, gap: GapInfo, max_depth: int) -> List[SwapChain]:
-        """嘗試多醫師聯合交換"""
-        chains = []
-        
-        if len(gap.candidates_over_quota) < 2:
-            return chains
-        
-        # 取前兩個醫師
-        doctor1_name = gap.candidates_over_quota[0]
-        doctor2_name = gap.candidates_over_quota[1]
-        
-        doctor1 = self.doctor_map[doctor1_name]
-        doctor2 = self.doctor_map[doctor2_name]
-        
-        # 找出兩個醫師的可交換班次
-        shifts1 = self._find_removable_shifts(doctor1, gap)
-        shifts2 = self._find_removable_shifts(doctor2, gap)
-        
-        if shifts1 and shifts2:
-            # 嘗試創建聯合交換鏈
-            steps = [
-                SwapStep(
-                    description=f"{doctor1_name} 從 {shifts1[0][0]} 移至 {gap.date}",
-                    from_date=shifts1[0][0],
-                    to_date=gap.date,
-                    doctor=doctor1_name,
-                    role=gap.role,
-                    impact_score=8.0
-                ),
-                SwapStep(
-                    description=f"{doctor2_name} 接手 {shifts1[0][0]}",
-                    from_date=shifts2[0][0],
-                    to_date=shifts1[0][0],
-                    doctor=doctor2_name,
-                    role=shifts1[0][1],
-                    impact_score=8.0
+            if self._can_take_over_safely(other_doctor, shift_date, shift_role):
+                step2 = SwapStep(
+                    description=f"{other_doctor.name} 接手 {shift_date} 的班",
+                    from_date="",
+                    to_date=shift_date,
+                    doctor=other_doctor.name,
+                    role=shift_role,
+                    impact_score=5.0
                 )
-            ]
-            
-            chain = SwapChain(
+                steps.append(step2)
+                replacement_found = True
+                break
+        
+        if not replacement_found:
+            return SwapChain(
                 steps=steps,
-                total_score=self._evaluate_chain(steps),
-                feasible=True,
-                validation_message="多醫師聯合交換",
-                complexity=len(steps)
+                total_score=0,
+                feasible=False,
+                validation_message="找不到接手醫師"
             )
-            
-            chains.append(chain)
         
-        return chains
-    
-    def _calculate_step_impact(self, from_date: str, to_date: str) -> float:
-        """計算單步交換的影響分數"""
-        impact = 5.0
+        # 計算總分
+        total_score = 100 - gap.priority_score  # 優先級越高，分數越高
         
-        # 如果跨類型（假日換平日），增加影響
-        from_is_holiday = from_date in self.holidays
-        to_is_holiday = to_date in self.holidays
-        
-        if from_is_holiday != to_is_holiday:
-            impact += 10.0
-        
-        return impact
-    
-    def _evaluate_chain(self, steps: List[SwapStep]) -> float:
-        """評估交換鏈的品質"""
-        score = 100.0
-        
-        # 步數懲罰
-        score -= len(steps) * 5
-        
-        # 每步影響累計
-        for step in steps:
-            score -= step.impact_score
-        
-        # 模擬執行並檢查違規
-        temp_schedule = self._simulate_chain(steps)
-        violations = self._count_violations(temp_schedule)
-        score -= violations * 20
-        
-        return max(0, score)
-    
-    def _simulate_chain(self, steps: List[SwapStep]) -> Dict[str, ScheduleSlot]:
-        """模擬執行交換鏈"""
-        temp_schedule = copy.deepcopy(self.schedule)
-        
-        for step in steps:
-            if step.from_date:
-                slot = temp_schedule[step.from_date]
-                if step.role == "主治":
-                    slot.attending = None
-                else:
-                    slot.resident = None
-            
-            if step.to_date:
-                slot = temp_schedule[step.to_date]
-                if step.role == "主治":
-                    slot.attending = step.doctor
-                else:
-                    slot.resident = step.doctor
-        
-        return temp_schedule
-    
-    def _count_violations(self, schedule: Dict[str, ScheduleSlot]) -> int:
-        """計算排班違規數"""
-        violations = 0
-        
-        # 重新計算班數
-        duties = defaultdict(lambda: {'weekday': 0, 'holiday': 0})
-        
-        for date_str, slot in schedule.items():
-            is_holiday = date_str in self.holidays
-            
-            if slot.attending:
-                if is_holiday:
-                    duties[slot.attending]['holiday'] += 1
-                else:
-                    duties[slot.attending]['weekday'] += 1
-            
-            if slot.resident:
-                if is_holiday:
-                    duties[slot.resident]['holiday'] += 1
-                else:
-                    duties[slot.resident]['weekday'] += 1
-        
-        # 檢查配額違規
-        for doctor in self.doctors:
-            if duties[doctor.name]['weekday'] > doctor.weekday_quota:
-                violations += 1
-            if duties[doctor.name]['holiday'] > doctor.holiday_quota:
-                violations += 1
-        
-        return violations
-    
-    def _generate_state_signature(self, chain: SwapChain) -> str:
-        """生成狀態簽名用於去重"""
-        sig_parts = []
-        for step in chain.steps:
-            sig_parts.append(f"{step.doctor}:{step.from_date}→{step.to_date}")
-        return "|".join(sorted(sig_parts))
-    
-    def _deduplicate_chains(self, chains: List[SwapChain]) -> List[SwapChain]:
-        """去除重複的交換鏈"""
-        seen = set()
-        unique_chains = []
-        
-        for chain in chains:
-            sig = self._generate_state_signature(chain)
-            if sig not in seen:
-                seen.add(sig)
-                unique_chains.append(chain)
-        
-        return unique_chains
+        return SwapChain(
+            steps=steps,
+            total_score=total_score,
+            feasible=True,
+            validation_message="可行的交換鏈"
+        )
     
     def _can_take_over_safely(self, doctor: Doctor, date: str, role: str) -> bool:
         """安全檢查是否可以接手班次"""
@@ -873,12 +428,8 @@ class Stage2AdvancedSwapper:
             # 保存當前狀態（用於回溯）
             self._save_state()
             
-            st.info(f"📝 應用交換鏈：{len(chain.steps)} 步")
-            
             # 執行每個步驟
-            for i, step in enumerate(chain.steps):
-                st.text(f"   步驟 {i+1}: {step.description}")
-                
+            for step in chain.steps:
                 if step.from_date:  # 移除步驟
                     slot = self.schedule[step.from_date]
                     if step.role == "主治":
@@ -900,18 +451,15 @@ class Stage2AdvancedSwapper:
             # 記錄應用的交換
             self.applied_swaps.append(chain)
             
-            st.success("✅ 交換鏈應用成功")
             return True
             
         except Exception as e:
-            st.error(f"❌ 應用交換鏈失敗：{str(e)}")
+            st.error(f"應用交換鏈失敗：{str(e)}")
             self._restore_state()
             return False
     
     def run_auto_fill_with_backtracking(self, max_backtracks: int = 5) -> Dict:
         """執行自動填補（含回溯）"""
-        st.info("🤖 開始自動填補流程...")
-        
         results = {
             'direct_fills': [],
             'swap_chains': [],
@@ -920,20 +468,15 @@ class Stage2AdvancedSwapper:
         }
         
         backtrack_count = 0
-        iteration = 0
         
         while self.gaps and backtrack_count < max_backtracks:
-            iteration += 1
-            st.text(f"\n📍 第 {iteration} 輪處理...")
-            
             progress_made = False
             
             # 第一階段：直接填補（B類醫師）
             for gap in self.gaps[:]:
                 if gap.candidates_with_quota:
+                    # 選擇最適合的B類醫師
                     best_doctor = self._select_best_candidate(gap.candidates_with_quota, gap)
-                    
-                    st.text(f"   ✅ 直接填補：{gap.date} {gap.role} → {best_doctor}")
                     
                     if self._apply_direct_fill(gap, best_doctor):
                         results['direct_fills'].append({
@@ -950,8 +493,6 @@ class Stage2AdvancedSwapper:
             # 第二階段：智慧交換（A類醫師）
             for gap in self.gaps[:]:
                 if gap.candidates_over_quota and not gap.candidates_with_quota:
-                    st.text(f"   🔄 尋找交換鏈：{gap.date} {gap.role}")
-                    
                     chains = self.find_multi_step_swap_chains(gap, max_depth=3)
                     
                     if chains:
@@ -959,7 +500,7 @@ class Stage2AdvancedSwapper:
                         if self.apply_swap_chain(chains[0]):
                             results['swap_chains'].append({
                                 'gap': f"{gap.date} {gap.role}",
-                                'chain': [step.description for step in chains[0].steps]
+                                'chain': chains[0].steps
                             })
                             progress_made = True
                             break
@@ -967,18 +508,16 @@ class Stage2AdvancedSwapper:
             if not progress_made:
                 # 檢測死路
                 if backtrack_count < max_backtracks:
-                    st.warning(f"⚠️ 無進展，執行回溯 ({backtrack_count + 1}/{max_backtracks})")
-                    
+                    # 執行回溯
                     if self._backtrack():
                         results['backtracks'].append({
-                            'iteration': iteration,
+                            'iteration': backtrack_count,
                             'reason': '無進展，嘗試回溯'
                         })
                         backtrack_count += 1
                     else:
                         break
                 else:
-                    st.error("❌ 達到最大回溯次數")
                     break
         
         # 記錄剩餘空缺
@@ -989,19 +528,11 @@ class Stage2AdvancedSwapper:
                 'reason': self._get_gap_reason(gap)
             })
         
-        st.success(f"""
-        📊 自動填補完成：
-        - 直接填補：{len(results['direct_fills'])} 個
-        - 交換解決：{len(results['swap_chains'])} 個
-        - 回溯次數：{len(results['backtracks'])}
-        - 剩餘空缺：{len(results['remaining_gaps'])} 個
-        """)
-        
         return results
     
     def _select_best_candidate(self, candidates: List[str], gap: GapInfo) -> str:
         """選擇最適合的候選人"""
-        # 選擇班數最少的
+        # 簡單策略：選擇班數最少的
         min_duties = float('inf')
         best = candidates[0]
         
@@ -1046,7 +577,7 @@ class Stage2AdvancedSwapper:
             applied_swaps=copy.deepcopy(self.applied_swaps)
         )
         self.backtrack_stack.append(state)
-        self.state_history.append(f"狀態保存於 {datetime.now().strftime('%H:%M:%S')}")
+        self.state_history.append(f"State saved at {datetime.now().strftime('%H:%M:%S')}")
     
     def _restore_state(self):
         """恢復上一個狀態"""
@@ -1056,7 +587,7 @@ class Stage2AdvancedSwapper:
             self.current_duties = state.current_duties
             self.gaps = state.gaps
             self.applied_swaps = state.applied_swaps
-            self.state_history.append(f"狀態恢復於 {datetime.now().strftime('%H:%M:%S')}")
+            self.state_history.append(f"State restored at {datetime.now().strftime('%H:%M:%S')}")
     
     def _backtrack(self) -> bool:
         """執行回溯"""
@@ -1118,8 +649,7 @@ class Stage2AdvancedSwapper:
                 'total_future_impact': sum(g.future_impact_score for g in self.gaps)
             },
             'applied_swaps': len(self.applied_swaps),
-            'state_history': len(self.state_history),
-            'search_stats': self.search_stats
+            'state_history': len(self.state_history)
         }
     
     def validate_all_constraints(self) -> List[str]:
@@ -1150,7 +680,6 @@ class Stage2AdvancedSwapper:
                         violations.append(f"⚠️ {doctor.name} 的優先值班日 {preferred_date} 被排給其他人")
         
         return violations
-    
     def get_gap_details_for_calendar(self) -> Dict:
         """為日曆視圖生成詳細的空缺資訊"""
         gap_details = {}
@@ -1223,6 +752,7 @@ class Stage2AdvancedSwapper:
 
     def _would_violate_consecutive(self, doctor_name: str, date: str) -> bool:
         """檢查是否會違反連續值班限制"""
+        from backend.utils import check_consecutive_days
         return check_consecutive_days(
             self.schedule, doctor_name, date, 
             self.constraints.max_consecutive_days
