@@ -932,7 +932,7 @@ class Stage2AdvancedSwapper:
             self._restore_state()
             return False
     
-    def run_auto_fill_with_backtracking(self, max_backtracks: int = 20) -> Dict:
+    def run_auto_fill_with_backtracking(self, max_backtracks: int = 20000) -> Dict:
         """執行自動填補（含回溯）"""
         self._log("🚀 開始自動填補流程...", "info")
         self._log(f"   📊 初始狀態：{len(self.gaps)} 個空缺待處理", "info")

@@ -13,6 +13,7 @@ from frontend.components.stage1_component import render_stage1
 from frontend.components.stage2_component import render_stage2_advanced
 from frontend.components.stage3_component import render_stage3
 
+
 def render():
     """渲染執行排班頁面"""
     st.header("🚀 智慧排班系統 - 三階段執行")
@@ -47,10 +48,6 @@ def render():
         
     if "stage2_swapper" not in st.session_state:
         st.session_state.stage2_swapper = None
-    
-    # 新增：初始化自動填補結果狀態
-    if "auto_fill_results" not in st.session_state:
-        st.session_state.auto_fill_results = None
 
     # 如果還在 Stage 1，顯示參數設定
     if st.session_state.current_stage == 1:

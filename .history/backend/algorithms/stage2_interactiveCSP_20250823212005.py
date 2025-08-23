@@ -1,7 +1,6 @@
 """
 Stage 2: 進階智慧交換補洞系統（完整優化版）
 包含深度搜索、多步交換鏈、回溯機制
-增強版：詳細繁體中文日誌
 """
 import copy
 import time
@@ -72,9 +71,6 @@ class Stage2AdvancedSwapper:
         self.weekdays = weekdays
         self.holidays = holidays
         
-        # 日誌回調（供前端使用） - 必須先初始化
-        self.log_callback: Optional[Callable[[str, str], None]] = None
-        
         # 建立醫師索引
         self.doctor_map = {d.name: d for d in doctors}
         
@@ -101,6 +97,9 @@ class Stage2AdvancedSwapper:
             'search_time': 0,
             'max_depth_reached': 0
         }
+        
+        # 日誌回調（供前端使用）
+        self.log_callback: Optional[Callable[[str, str], None]] = None
     
     def set_log_callback(self, callback: Callable[[str, str], None]):
         """設定日誌回調函數"""
@@ -113,7 +112,6 @@ class Stage2AdvancedSwapper:
     
     def _count_all_duties(self) -> Dict[str, Dict]:
         """計算所有醫師的當前班數"""
-        self._log("📊 正在計算所有醫師的當前班數...", "info")
         duties = defaultdict(lambda: {'weekday': 0, 'holiday': 0, 'total': 0})
         
         for date_str, slot in self.schedule.items():
@@ -133,12 +131,10 @@ class Stage2AdvancedSwapper:
                     duties[slot.resident]['weekday'] += 1
                 duties[slot.resident]['total'] += 1
         
-        self._log(f"✅ 已計算 {len(duties)} 位醫師的班數統計", "success")
         return duties
     
     def _identify_locked_assignments(self) -> Set[Tuple[str, str, str]]:
         """識別被鎖定的班次（優先值班日）"""
-        self._log("🔒 正在識別優先值班日（鎖定班次）...", "info")
         locked = set()
         
         for date_str, slot in self.schedule.items():
@@ -152,12 +148,10 @@ class Stage2AdvancedSwapper:
                 if doctor and date_str in doctor.preferred_dates:
                     locked.add((date_str, "總醫師", slot.resident))
         
-        self._log(f"🔐 找到 {len(locked)} 個鎖定班次（優先值班日）", "info")
         return locked
     
     def _analyze_gaps_advanced(self) -> List[GapInfo]:
         """進階空缺分析（包含評分）"""
-        self._log("🔍 開始進階空缺分析...", "info")
         gaps = []
         
         for date_str, slot in self.schedule.items():
@@ -174,15 +168,10 @@ class Stage2AdvancedSwapper:
                     gaps.append(gap)
         
         # 計算優先級分數並排序
-        self._log("📈 正在計算空缺優先級...", "info")
         for gap in gaps:
             gap.priority_score = self._calculate_priority_score(gap)
         
         gaps.sort(key=lambda x: -x.priority_score)
-        
-        self._log(f"✅ 分析完成：找到 {len(gaps)} 個空缺", "success")
-        if gaps:
-            self._log(f"🎯 最高優先級空缺：{gaps[0].date} {gaps[0].role}（分數：{gaps[0].priority_score:.1f}）", "warning")
         
         return gaps
     
@@ -311,8 +300,7 @@ class Stage2AdvancedSwapper:
     
     def find_deep_swap_chains(self, gap: GapInfo, max_depth: int = 5) -> List[SwapChain]:
         """尋找深度交換鏈 - 固定深度5"""
-        self._log(f"🔄 開始深度搜索 {gap.date} {gap.role} 的交換鏈（深度={max_depth}）...", "info")
-        self._log(f"   📌 空缺資訊：優先級={gap.priority_score:.1f}，嚴重度={gap.severity:.1f}", "info")
+        self._log(f"開始深度搜索 {gap.date} {gap.role} 的交換鏈（深度={max_depth}）...", "info")
         
         chains = []
         visited_states = set()  # 避免重複搜索
@@ -330,13 +318,12 @@ class Stage2AdvancedSwapper:
         }
         
         # 對每個需要交換的醫師進行搜索
-        self._log(f"🎯 A類醫師（需交換）：{len(gap.candidates_over_quota)} 位", "info")
         for doctor_name in gap.candidates_over_quota:
             if time.time() - start_time > max_search_time:
-                self._log(f"⏰ 搜索時間已達上限（{max_search_time}秒），停止搜索", "warning")
+                self._log(f"搜索時間已達上限 ({max_search_time}秒)", "warning")
                 break
             
-            self._log(f"🔍 搜索醫師 {doctor_name} 的交換方案...", "info")
+            self._log(f"搜索醫師 {doctor_name} 的交換方案...", "info")
             
             doctor = self.doctor_map[doctor_name]
             
@@ -350,7 +337,7 @@ class Stage2AdvancedSwapper:
         
         # 如果找到的交換鏈太少，嘗試更激進的策略
         if len(chains) < 5:
-            self._log("⚡ 找到的方案太少，嘗試激進搜索策略...", "warning")
+            self._log("嘗試激進搜索策略...", "info")
             chains.extend(self._find_aggressive_swap_chains(gap, max_depth))
         
         # 去重並排序
@@ -361,7 +348,7 @@ class Stage2AdvancedSwapper:
         self.search_stats['search_time'] = time.time() - start_time
         self.search_stats['chains_found'] = len(chains)
         
-        self._log(f"✅ 搜索完成！時間：{self.search_stats['search_time']:.2f} 秒，"
+        self._log(f"搜索完成！時間：{self.search_stats['search_time']:.2f} 秒，"
                  f"探索路徑：{self.search_stats['chains_explored']} 條，"
                  f"找到方案：{self.search_stats['chains_found']} 個，"
                  f"最大深度：{self.search_stats['max_depth_reached']} 層", "success")
@@ -393,7 +380,7 @@ class Stage2AdvancedSwapper:
         
         # 每探索100條路徑顯示進度
         if self.search_stats['chains_explored'] % 100 == 0:
-            self._log(f"   📊 已探索 {self.search_stats['chains_explored']} 條路徑...", "info")
+            self._log(f"已探索 {self.search_stats['chains_explored']} 條路徑...", "info")
         
         if current_depth == 0:
             # 第一層：找出該醫師所有可移除的班次
@@ -463,9 +450,6 @@ class Stage2AdvancedSwapper:
                 
                 all_chains.append(final_chain)
                 self.search_stats['chains_found'] += 1
-                
-                if self.search_stats['chains_found'] % 10 == 0:
-                    self._log(f"   🎯 已找到 {self.search_stats['chains_found']} 個可行方案", "success")
                 
             elif candidate['type'] == 'needs_swap' and current_depth < max_depth:
                 # 需要進一步交換
@@ -621,7 +605,7 @@ class Stage2AdvancedSwapper:
         """更激進的搜索策略"""
         chains = []
         
-        self._log("💪 嘗試跨類型交換（假日↔平日）...", "info")
+        self._log("嘗試跨類型交換...", "info")
         
         # 策略1：考慮跨類型交換（假日換平日）
         for doctor_name in gap.candidates_over_quota:
@@ -646,15 +630,12 @@ class Stage2AdvancedSwapper:
                 chain = self._try_forced_swap(gap, doctor, shift_date, shift_role)
                 if chain and chain.feasible:
                     chains.append(chain)
-                    self._log(f"   ✅ 找到強制交換方案：{len(chain.steps)} 步", "success")
         
         # 策略2：多醫師聯合交換
         if len(gap.candidates_over_quota) >= 2:
-            self._log("🤝 嘗試多醫師聯合交換...", "info")
+            self._log("嘗試多醫師聯合交換...", "info")
             multi_chains = self._try_multi_doctor_swap(gap, max_depth)
             chains.extend(multi_chains)
-            if multi_chains:
-                self._log(f"   ✅ 找到 {len(multi_chains)} 個聯合交換方案", "success")
         
         return chains
     
@@ -890,18 +871,17 @@ class Stage2AdvancedSwapper:
     def apply_swap_chain(self, chain: SwapChain) -> bool:
         """應用交換鏈"""
         if not chain.feasible:
-            self._log("❌ 交換鏈不可行，無法應用", "error")
             return False
         
         try:
             # 保存當前狀態（用於回溯）
             self._save_state()
             
-            self._log(f"🔄 應用交換鏈：{len(chain.steps)} 步", "info")
+            self._log(f"應用交換鏈：{len(chain.steps)} 步", "info")
             
             # 執行每個步驟
             for i, step in enumerate(chain.steps):
-                self._log(f"   步驟 {i+1}: {step.description}", "info")
+                self._log(f"步驟 {i+1}: {step.description}", "info")
                 
                 if step.from_date:  # 移除步驟
                     slot = self.schedule[step.from_date]
@@ -924,19 +904,17 @@ class Stage2AdvancedSwapper:
             # 記錄應用的交換
             self.applied_swaps.append(chain)
             
-            self._log("✅ 交換鏈應用成功", "success")
+            self._log("交換鏈應用成功", "success")
             return True
             
         except Exception as e:
-            self._log(f"❌ 應用交換鏈失敗：{str(e)}", "error")
+            self._log(f"應用交換鏈失敗：{str(e)}", "error")
             self._restore_state()
             return False
     
-    def run_auto_fill_with_backtracking(self, max_backtracks: int = 20) -> Dict:
+    def run_auto_fill_with_backtracking(self, max_backtracks: int = 20000) -> Dict:
         """執行自動填補（含回溯）"""
-        self._log("🚀 開始自動填補流程...", "info")
-        self._log(f"   📊 初始狀態：{len(self.gaps)} 個空缺待處理", "info")
-        self._log(f"   ⚙️ 參數設定：最大回溯次數 = {max_backtracks:,}", "info")
+        self._log("開始自動填補流程...", "info")
         
         results = {
             'direct_fills': [],
@@ -947,21 +925,19 @@ class Stage2AdvancedSwapper:
         
         backtrack_count = 0
         iteration = 0
-        start_time = time.time()
         
         while self.gaps and backtrack_count < max_backtracks:
             iteration += 1
-            self._log(f"\n📍 第 {iteration} 輪處理（剩餘 {len(self.gaps)} 個空缺）", "info")
+            self._log(f"第 {iteration} 輪處理...", "info")
             
             progress_made = False
             
             # 第一階段：直接填補（B類醫師）
-            self._log("🟢 階段一：嘗試直接填補（有配額的醫師）...", "info")
             for gap in self.gaps[:]:
                 if gap.candidates_with_quota:
                     best_doctor = self._select_best_candidate(gap.candidates_with_quota, gap)
                     
-                    self._log(f"   ✅ 直接填補：{gap.date} {gap.role} → {best_doctor}", "success")
+                    self._log(f"直接填補：{gap.date} {gap.role} → {best_doctor}", "success")
                     
                     if self._apply_direct_fill(gap, best_doctor):
                         results['direct_fills'].append({
@@ -976,15 +952,13 @@ class Stage2AdvancedSwapper:
                 continue
             
             # 第二階段：深度5交換鏈（A類醫師）
-            self._log("🟡 階段二：深度搜索交換鏈（超額但可交換的醫師）...", "info")
             for gap in self.gaps[:]:
                 if gap.candidates_over_quota and not gap.candidates_with_quota:
-                    self._log(f"   🔍 尋找交換鏈：{gap.date} {gap.role}", "info")
+                    self._log(f"尋找深度5交換鏈：{gap.date} {gap.role}", "info")
                     
                     chains = self.find_deep_swap_chains(gap, max_depth=5)
                     
                     if chains:
-                        self._log(f"   🎯 找到 {len(chains)} 個可行方案，應用最佳方案", "success")
                         # 應用最佳交換鏈
                         if self.apply_swap_chain(chains[0]):
                             results['swap_chains'].append({
@@ -993,13 +967,11 @@ class Stage2AdvancedSwapper:
                             })
                             progress_made = True
                             break
-                    else:
-                        self._log(f"   ⚠️ 未找到可行的交換鏈", "warning")
             
             if not progress_made:
                 # 檢測死路
                 if backtrack_count < max_backtracks:
-                    self._log(f"🔙 無進展，執行回溯 ({backtrack_count + 1}/{max_backtracks})", "warning")
+                    self._log(f"無進展，執行回溯 ({backtrack_count + 1}/{max_backtracks})", "warning")
                     
                     if self._backtrack():
                         results['backtracks'].append({
@@ -1008,10 +980,9 @@ class Stage2AdvancedSwapper:
                         })
                         backtrack_count += 1
                     else:
-                        self._log("⚠️ 無法回溯，停止處理", "warning")
                         break
                 else:
-                    self._log("❌ 達到最大回溯次數，停止處理", "error")
+                    self._log("達到最大回溯次數", "error")
                     break
         
         # 記錄剩餘空缺
@@ -1022,14 +993,10 @@ class Stage2AdvancedSwapper:
                 'reason': self._get_gap_reason(gap)
             })
         
-        elapsed_time = time.time() - start_time
-        
-        self._log(f"\n✅ 自動填補完成！總耗時：{elapsed_time:.2f} 秒", "success")
-        self._log(f"   📊 成果統計：", "info")
-        self._log(f"      - 直接填補：{len(results['direct_fills'])} 個", "info")
-        self._log(f"      - 交換解決：{len(results['swap_chains'])} 個", "info")
-        self._log(f"      - 回溯次數：{len(results['backtracks'])}", "info")
-        self._log(f"      - 剩餘空缺：{len(results['remaining_gaps'])} 個", "warning" if results['remaining_gaps'] else "info")
+        self._log(f"自動填補完成！直接填補：{len(results['direct_fills'])} 個，"
+                 f"交換解決：{len(results['swap_chains'])} 個，"
+                 f"回溯次數：{len(results['backtracks'])}，"
+                 f"剩餘空缺：{len(results['remaining_gaps'])} 個", "success")
         
         return results
     

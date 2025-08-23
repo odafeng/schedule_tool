@@ -72,9 +72,6 @@ class Stage2AdvancedSwapper:
         self.weekdays = weekdays
         self.holidays = holidays
         
-        # 日誌回調（供前端使用） - 必須先初始化
-        self.log_callback: Optional[Callable[[str, str], None]] = None
-        
         # 建立醫師索引
         self.doctor_map = {d.name: d for d in doctors}
         
@@ -101,6 +98,9 @@ class Stage2AdvancedSwapper:
             'search_time': 0,
             'max_depth_reached': 0
         }
+        
+        # 日誌回調（供前端使用）
+        self.log_callback: Optional[Callable[[str, str], None]] = None
     
     def set_log_callback(self, callback: Callable[[str, str], None]):
         """設定日誌回調函數"""
@@ -932,7 +932,7 @@ class Stage2AdvancedSwapper:
             self._restore_state()
             return False
     
-    def run_auto_fill_with_backtracking(self, max_backtracks: int = 20) -> Dict:
+    def run_auto_fill_with_backtracking(self, max_backtracks: int = 20000) -> Dict:
         """執行自動填補（含回溯）"""
         self._log("🚀 開始自動填補流程...", "info")
         self._log(f"   📊 初始狀態：{len(self.gaps)} 個空缺待處理", "info")
