@@ -1,0 +1,225 @@
+{
+  "metadata": {
+    "created_at": "20250824_172733",
+    "year": 2025,
+    "month": 9,
+    "fill_rate": 1.0
+  },
+  "schedule": {
+    "2025-09-01": {
+      "attending": "吳志謙",
+      "resident": "曾馨平"
+    },
+    "2025-09-02": {
+      "attending": "李明泓",
+      "resident": "曾馨平"
+    },
+    "2025-09-03": {
+      "attending": "李明泓",
+      "resident": "王宇軒"
+    },
+    "2025-09-04": {
+      "attending": "陳禹勳",
+      "resident": "王宇軒"
+    },
+    "2025-09-05": {
+      "attending": "朱炳騰",
+      "resident": "黃鼎宇"
+    },
+    "2025-09-08": {
+      "attending": "李明泓",
+      "resident": "王宇軒"
+    },
+    "2025-09-09": {
+      "attending": "陳禹勳",
+      "resident": "王宇軒"
+    },
+    "2025-09-10": {
+      "attending": "李明泓",
+      "resident": "王宇軒"
+    },
+    "2025-09-11": {
+      "attending": "陳禹勳",
+      "resident": "譚詠霖"
+    },
+    "2025-09-12": {
+      "attending": "陳禹勳",
+      "resident": "王宇軒"
+    },
+    "2025-09-15": {
+      "attending": "朱炳騰",
+      "resident": "譚詠霖"
+    },
+    "2025-09-16": {
+      "attending": "李明泓",
+      "resident": "譚詠霖"
+    },
+    "2025-09-17": {
+      "attending": "黃士峯",
+      "resident": "譚詠霖"
+    },
+    "2025-09-18": {
+      "attending": "吳志謙",
+      "resident": "方翊軒"
+    },
+    "2025-09-19": {
+      "attending": "黃士峯",
+      "resident": "譚詠霖"
+    },
+    "2025-09-22": {
+      "attending": "朱炳騰",
+      "resident": "譚詠霖"
+    },
+    "2025-09-23": {
+      "attending": "黃士峯",
+      "resident": "方翊軒"
+    },
+    "2025-09-24": {
+      "attending": "吳志謙",
+      "resident": "黃田馨"
+    },
+    "2025-09-25": {
+      "attending": "黃士峯",
+      "resident": "黃田馨"
+    },
+    "2025-09-26": {
+      "attending": "黃士峯",
+      "resident": "張碩甫"
+    },
+    "2025-09-30": {
+      "attending": "吳志謙",
+      "resident": "張碩甫"
+    },
+    "2025-09-06": {
+      "attending": "李明泓",
+      "resident": "曾馨平"
+    },
+    "2025-09-07": {
+      "attending": "陳禹勳",
+      "resident": "黃鼎宇"
+    },
+    "2025-09-13": {
+      "attending": "黃士峯",
+      "resident": "方翊軒"
+    },
+    "2025-09-14": {
+      "attending": "李明泓",
+      "resident": "王宇軒"
+    },
+    "2025-09-20": {
+      "attending": "朱炳騰",
+      "resident": "王宇軒"
+    },
+    "2025-09-21": {
+      "attending": "吳志謙",
+      "resident": "譚詠霖"
+    },
+    "2025-09-27": {
+      "attending": "黃士峯",
+      "resident": "譚詠霖"
+    },
+    "2025-09-28": {
+      "attending": "朱炳騰",
+      "resident": "黃田馨"
+    },
+    "2025-09-29": {
+      "attending": "黃士峯",
+      "resident": "張碩甫"
+    }
+  },
+  "statistics": {
+    "total_days": 30,
+    "weekdays": 21,
+    "holidays": 9,
+    "doctor_duties": {
+      "吳志謙": {
+        "weekday": 4,
+        "holiday": 1,
+        "total": 5,
+        "weekday_quota": 4,
+        "holiday_quota": 1
+      },
+      "陳禹勳": {
+        "weekday": 4,
+        "holiday": 1,
+        "total": 5,
+        "weekday_quota": 4,
+        "holiday_quota": 2
+      },
+      "李明泓": {
+        "weekday": 5,
+        "holiday": 2,
+        "total": 7,
+        "weekday_quota": 5,
+        "holiday_quota": 2
+      },
+      "黃士峯": {
+        "weekday": 5,
+        "holiday": 3,
+        "total": 8,
+        "weekday_quota": 6,
+        "holiday_quota": 2
+      },
+      "朱炳騰": {
+        "weekday": 3,
+        "holiday": 2,
+        "total": 5,
+        "weekday_quota": 2,
+        "holiday_quota": 2
+      },
+      "王宇軒": {
+        "weekday": 6,
+        "holiday": 2,
+        "total": 8,
+        "weekday_quota": 6,
+        "holiday_quota": 2
+      },
+      "方翊軒": {
+        "weekday": 2,
+        "holiday": 1,
+        "total": 3,
+        "weekday_quota": 2,
+        "holiday_quota": 1
+      },
+      "曾馨平": {
+        "weekday": 2,
+        "holiday": 1,
+        "total": 3,
+        "weekday_quota": 2,
+        "holiday_quota": 1
+      },
+      "譚詠霖": {
+        "weekday": 6,
+        "holiday": 2,
+        "total": 8,
+        "weekday_quota": 6,
+        "holiday_quota": 2
+      },
+      "黃田馨": {
+        "weekday": 2,
+        "holiday": 1,
+        "total": 3,
+        "weekday_quota": 2,
+        "holiday_quota": 1
+      },
+      "黃鼎宇": {
+        "weekday": 1,
+        "holiday": 1,
+        "total": 2,
+        "weekday_quota": 1,
+        "holiday_quota": 1
+      },
+      "張碩甫": {
+        "weekday": 2,
+        "holiday": 1,
+        "total": 3,
+        "weekday_quota": 2,
+        "holiday_quota": 1
+      }
+    },
+    "role_distribution": {
+      "主治": 30,
+      "總醫師": 30
+    }
+  }
+}
