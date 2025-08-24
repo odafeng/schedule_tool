@@ -1,0 +1,10 @@
+# 環境變數
+.env
+.env.local
+.env.*.local
+.streamlit
+**/.streamlit
+
+# Supabase
+**/supabase/.branches
+**/supabase/.temp
