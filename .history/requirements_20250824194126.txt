@@ -7,5 +7,3 @@ dataclasses-json>=0.6.0
 python-dotenv==1.0.0
 supabase==2.0.0
 reportlab==4.0.0
-openpyxl>=3.1.0
-line-bot-sdk>=3.5.0

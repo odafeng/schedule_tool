@@ -1,0 +1,42 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environment
+.venv/
+env/
+venv/
+.env
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VSCode settings
+.vscode/
+
+.history/
+
+# Streamlit local settings
+.streamlit/secrets.toml
+.streamlit/secrets/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# 環境變數
+.env
+.env.local
+.env.*.local
+.streamlit
+**/.streamlit
+
+# Supabase
+**/supabase/.branches
+**/supabase/.temp
